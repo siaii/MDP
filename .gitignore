@@ -13,6 +13,9 @@
 #IntelliJ IDEA
 .idea/
 
+#Out
+out/
+
 # Package Files #
 *.jar
 *.war
