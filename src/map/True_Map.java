@@ -52,11 +52,9 @@ public class True_Map {
                 for(int i = 0; i< MAP_CONST.MAP_GRID_WIDTH; ++i){
                     if(line.charAt(i)=='0' || line.charAt(i)=='1'){
                         Map[lineNum][i]=Character.getNumericValue(line.charAt(i));
-                        System.out.print(line.charAt(i));
                     }
                 }
                 lineNum++;
-                System.out.println();
                 line = buf.readLine();
             }
         } catch (IOException e) {

@@ -17,4 +17,6 @@ public class MAP_CONST {
     public static final int FINISH_ZONE_CENTER_X = MAP_GRID_WIDTH-2;
     public static final int FINISH_ZONE_CENTER_Y = 1;
 
+    public static final int INFINITE_COST = 999;
+
 }

@@ -6,7 +6,7 @@ public class Map {
     public class Map_Cells{
         boolean isTrueWall=false;
         boolean isVirtualWall = false;
-        boolean isExplored = false; //TODO change to false when exploration algo is implemented
+        boolean isExplored = false;
 
         private void SetTrueWall(boolean val){
             isTrueWall=val;

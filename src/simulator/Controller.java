@@ -14,7 +14,8 @@ import static robot.ORIENTATION.*;
 public class Controller {
 
     private static Controller _instance = null;
-    private ExplorationAlgorithm ExploreAlgo;
+    private ExplorationAlgorithm exploreAlgo;
+    private FastestPathAlgorithm fastestPathAlgo;
     private UIController ui;
     private Robot virtualRobot;
     private Map arena;
@@ -45,7 +46,8 @@ public class Controller {
         arena = new Map();
         trueArena = new True_Map();
         virtualRobot = new Robot(MAP_CONST.ROBOT_START_ZONE_CENTER_X,MAP_CONST.ROBOT_START_ZONE_CENTER_Y, NORTH);
-        ExploreAlgo = new ExplorationAlgorithm();
+        exploreAlgo = new ExplorationAlgorithm();
+        fastestPathAlgo = new FastestPathAlgorithm();
     }
 
     public void run() throws InterruptedException {
@@ -68,11 +70,12 @@ public class Controller {
     }
 
     public void startExploration() throws InterruptedException {
-        ExploreAlgo.exploreArena();
+        exploreAlgo.exploreArena();
     }
 
-    public void startFastestPath(){
-
+    public void runFastestPath(){
+        fastestPathAlgo.findFastestPath(MAP_CONST.FINISH_ZONE_CENTER_X, MAP_CONST.FINISH_ZONE_CENTER_Y);
+        fastestPathAlgo.getFastestPath();
     }
 
     public void robotTurnRight() throws InterruptedException {
@@ -423,6 +426,19 @@ public class Controller {
                 }
                 break;
         }
+    }
+
+    public boolean checkIsAccessible(int posX, int posY){
+
+        if(arena.CheckIsAccessible(posX,posY)==ACCESS.YES){
+            return true;
+        }else{
+            return false;
+        }
+    }
+
+    public ORIENTATION getRobotOrientation(){
+        return virtualRobot.getRobotOrientation();
     }
 
 }

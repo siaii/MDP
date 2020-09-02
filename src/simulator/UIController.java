@@ -74,6 +74,14 @@ public class UIController extends JFrame {
             }
         });
 
+        fastestBut.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                mainController.runFastestPath();
+                repaint();
+            }
+        });
+
         buttonPanel.add(exploreBut);
         buttonPanel.add(fastestBut);
     }
