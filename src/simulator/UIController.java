@@ -77,7 +77,11 @@ public class UIController extends JFrame {
         fastestBut.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                mainController.runFastestPath();
+                try {
+                    mainController.runFastestPath();
+                } catch (InterruptedException ex) {
+                    ex.printStackTrace();
+                }
                 repaint();
             }
         });

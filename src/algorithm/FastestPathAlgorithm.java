@@ -4,18 +4,23 @@ import map.MAP_CONST;
 import robot.ORIENTATION;
 import robot.ROBOT_CONST;
 import simulator.Controller;
+import simulator.UIController;
 
+import javax.swing.*;
 import java.util.*;
 
 public class FastestPathAlgorithm {
     private Controller mainController;
+    private UIController ui;
     private ArrayList<ORIENTATION> pathToTake;
     private int searchCountTimeout = 1000;
+    private String pathString;
 
     private gridNode[][] gridNodeArray = new gridNode[MAP_CONST.MAP_GRID_HEIGHT][MAP_CONST.MAP_GRID_WIDTH];
 
     public FastestPathAlgorithm(){
         mainController = Controller.getInstance();
+        ui = UIController.getInstance();
     }
 
     private class gridNode{
@@ -96,16 +101,27 @@ public class FastestPathAlgorithm {
         return totalCost;
     }
 
+    public void runFastestPath(int destPosX, int destPosY) throws InterruptedException {
+        int[] robotInitialPos = mainController.getRobotPos();
+        if(robotInitialPos[0]==destPosX && robotInitialPos[1]==destPosY){
+            System.out.println("Robot already at destination");
+            return;
+        }
+        findFastestPath(destPosX, destPosY);
+        getFastestPath();
+        FastestPathTask fastestPathTask = new FastestPathTask();
+        fastestPathTask.execute();
+    }
 
     //Using A* Algorithm
     public void findFastestPath(int destPosX, int destPosY){
         initCostArray();
         ArrayList<gridNode> openNodes = new ArrayList<gridNode>();
         ArrayList<gridNode> closedNodes = new ArrayList<gridNode>();
-
+        int[] robotInitialPos = mainController.getRobotPos();
         //The start node
         gridNode currNode;
-        gridNode startNode = gridNodeArray[MAP_CONST.ROBOT_START_ZONE_CENTER_Y][MAP_CONST.ROBOT_START_ZONE_CENTER_X];
+        gridNode startNode = gridNodeArray[robotInitialPos[1]][robotInitialPos[0]];
         startNode.totalCost=costH(startNode, destPosX, destPosY);
         startNode.gCost=0;
 
@@ -173,7 +189,7 @@ public class FastestPathAlgorithm {
         System.out.println("Path found!");
     }
 
-    public void getFastestPath(){
+    public void getFastestPath() throws InterruptedException {
         ArrayList<gridNode> pathToTake = new ArrayList<>();
 
         gridNode currNode = gridNodeArray[MAP_CONST.FINISH_ZONE_CENTER_Y][MAP_CONST.FINISH_ZONE_CENTER_X];
@@ -182,19 +198,110 @@ public class FastestPathAlgorithm {
             currNode = currNode.fromNode;
         }while(currNode!=gridNodeArray[MAP_CONST.ROBOT_START_ZONE_CENTER_Y][MAP_CONST.ROBOT_START_ZONE_CENTER_X]);
 
+        //Add the starting node to arraylist
+        pathToTake.add(currNode);
+
         Collections.reverse(pathToTake);
         for(int i=0; i<pathToTake.size(); ++i){
             gridNode temp = pathToTake.get(i);
             System.out.printf("%d, %d\n", temp.nodePos[0], temp.nodePos[1]);
         }
+
+        pathString = turnPathToDirection(pathToTake);
     }
 
-    //TODO implement this
-    private void turnPathToDirection(ArrayList<gridNode> path){
-        String robotMovement="";
+    private String turnPathToDirection(ArrayList<gridNode> path){
+        StringBuilder robotMovement= new StringBuilder();
+        ORIENTATION currOrientation = ORIENTATION.NORTH;
         for(int i=1; i<path.size(); ++i){
-
+            //Robot going northward
+            if(path.get(i).nodePos[1]-path.get(i-1).nodePos[1]<0){
+                switch (currOrientation){
+                    case NORTH:
+                        robotMovement.append("F");
+                        currOrientation=ORIENTATION.NORTH;
+                        break;
+                    case EAST:
+                        robotMovement.append("LF");
+                        currOrientation=ORIENTATION.NORTH;
+                        break;
+                    case WEST:
+                        robotMovement.append("RF");
+                        currOrientation=ORIENTATION.NORTH;
+                        break;
+                    case SOUTH:
+                        robotMovement.append("U"); //Should not happen
+                        currOrientation=ORIENTATION.NORTH;
+                        break;
+                }
+            }
+            //Going southward
+            else if(path.get(i).nodePos[1]-path.get(i-1).nodePos[1]>0){
+                switch (currOrientation){
+                    case NORTH:
+                        robotMovement.append("U"); //Should not happen
+                        currOrientation=ORIENTATION.SOUTH;
+                        break;
+                    case EAST:
+                        robotMovement.append("RF");
+                        currOrientation=ORIENTATION.SOUTH;
+                        break;
+                    case WEST:
+                        robotMovement.append("LF");
+                        currOrientation=ORIENTATION.SOUTH;
+                        break;
+                    case SOUTH:
+                        robotMovement.append("F");
+                        currOrientation=ORIENTATION.SOUTH;
+                        break;
+                }
+            }
+            //Going westward
+            else if(path.get(i).nodePos[0]-path.get(i-1).nodePos[0]<0){
+                switch (currOrientation){
+                    case NORTH:
+                        robotMovement.append("LF");
+                        currOrientation=ORIENTATION.WEST;
+                        break;
+                    case EAST:
+                        robotMovement.append("U"); //Should not happen
+                        currOrientation=ORIENTATION.WEST;
+                        break;
+                    case WEST:
+                        robotMovement.append("F");
+                        currOrientation=ORIENTATION.WEST;
+                        break;
+                    case SOUTH:
+                        robotMovement.append("RF");
+                        currOrientation=ORIENTATION.WEST;
+                        break;
+                }
+            }
+            //Going eastward
+            else if(path.get(i).nodePos[0]-path.get(i-1).nodePos[0]>0){
+                switch (currOrientation){
+                    case NORTH:
+                        robotMovement.append("RF");
+                        currOrientation=ORIENTATION.EAST;
+                        break;
+                    case EAST:
+                        robotMovement.append("F");
+                        currOrientation=ORIENTATION.EAST;
+                        break;
+                    case WEST:
+                        robotMovement.append("U"); //Should not happen
+                        currOrientation=ORIENTATION.EAST;
+                        break;
+                    case SOUTH:
+                        robotMovement.append("LF");
+                        currOrientation=ORIENTATION.EAST;
+                        break;
+                }
+            }
         }
+
+        System.out.println(robotMovement.toString());
+        return robotMovement.toString();
     }
     
     private gridNode getLowestFCost(ArrayList<gridNode> nodes){
@@ -209,6 +316,59 @@ public class FastestPathAlgorithm {
             return result;
         }else{
             return null;
+        }
+    }
+
+    private void executeFastestPath(String pathString) throws InterruptedException {
+        for(int i=0; i<pathString.length(); ++i){
+            switch (pathString.charAt(i)){
+                case 'F':
+                    mainController.robotMoveForward();
+                    break;
+                case 'R':
+                    mainController.robotTurnRight();
+                    break;
+                case 'L':
+                    mainController.robotTurnLeft();
+                    break;
+                default:
+                    System.out.println("Something is wrong in the path");
+                    break;
+            }
+            Thread.sleep(200);
+        }
+    }
+
+    private class FastestPathTask extends SwingWorker<Void, int[]> {
+
+        @Override
+        protected Void doInBackground() throws Exception {
+            for(int i=0; i<pathString.length(); ++i){
+                switch (pathString.charAt(i)){
+                    case 'F':
+                        mainController.robotMoveForward();
+                        break;
+                    case 'R':
+                        mainController.robotTurnRight();
+                        break;
+                    case 'L':
+                        mainController.robotTurnLeft();
+                        break;
+                    default:
+                        System.out.println("Something is wrong in the path");
+                        break;
+                }
+                publish();
+                Thread.sleep(200);
+            }
+            System.out.println("Reached target destination");
+            return null;
+        }
+
+        @Override
+        protected void process(List<int[]> chunks) {
+            super.process(chunks);
+            ui.repaint();
         }
     }
 

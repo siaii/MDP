@@ -21,6 +21,7 @@ public class Controller {
     private Map arena;
     private True_Map trueArena;
     private static final boolean isRealRun=false;
+    private boolean isArenaExplored=false;
 
     public static Controller getInstance(){
         if(_instance==null){
@@ -71,11 +72,15 @@ public class Controller {
 
     public void startExploration() throws InterruptedException {
         exploreAlgo.exploreArena();
+        isArenaExplored=true;
     }
 
-    public void runFastestPath(){
-        fastestPathAlgo.findFastestPath(MAP_CONST.FINISH_ZONE_CENTER_X, MAP_CONST.FINISH_ZONE_CENTER_Y);
-        fastestPathAlgo.getFastestPath();
+    public void runFastestPath() throws InterruptedException {
+        if(!isArenaExplored){
+            System.out.println("Please explore the arena first");
+            return;
+        }
+        fastestPathAlgo.runFastestPath(MAP_CONST.FINISH_ZONE_CENTER_X, MAP_CONST.FINISH_ZONE_CENTER_Y);
     }
 
     public void robotTurnRight() throws InterruptedException {

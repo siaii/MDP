@@ -77,7 +77,7 @@ public class ExplorationAlgorithm {
 
                 //Sleep is for simulator only
 
-                Thread.sleep(10); //TODO change back to 200, this is only for fastest path testing
+                Thread.sleep(200); //TODO change back to 200, this is only for fastest path testing
                 currRobotPos=mController.getRobotPos();
                 publish(currRobotPos);
 
