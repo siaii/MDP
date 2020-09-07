@@ -11,6 +11,17 @@ import robot.Robot;
 
 import static robot.ORIENTATION.*;
 
+//TODO
+// Create MDF String from map info
+// Send the mdf string to rpi, then to android
+// Send command to rpi then to robot
+// Receive image coords and id from rpi
+// Add Fastest path waypoint to the fastest path algo
+// Use fastest path algo to visit unexplored part of the map in exploration algo, then go back to start zone (MUST)
+// Optimize fastest path and exploration to not move the robot one tile at a time, but 1-9 tiles
+// Android has a message that moves it 1-9 tile ahead, and turn left/right, for fastest path ONLY for now
+
+
 public class Controller {
 
     private static Controller _instance = null;
