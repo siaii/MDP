@@ -126,4 +126,67 @@ public class Map {
 
         return unexploredTiles;
     }
+
+    private String binToHex(String bin){
+        int dec = Integer.parseInt(bin, 2);
+
+        return Integer.toHexString(dec);
+    }
+
+    //Part 1 of mdf string, is the grid explored or not
+    public String GetMdfStringExplored(){
+        StringBuilder part1 = new StringBuilder();
+        StringBuffer binTemp = new StringBuffer(4);
+        binTemp.append("11");
+        for(int y=0; y<MAP_CONST.MAP_GRID_HEIGHT; ++y){
+            for(int x=0; x<MAP_CONST.MAP_GRID_WIDTH; ++x){
+                if(binTemp.length()==4){
+                    part1.append(binToHex(binTemp.toString()));
+                    binTemp.delete(0,binTemp.capacity());
+                }
+                if(fullMap[y][x].isExplored){
+                    binTemp.append('1');
+                }else{
+                    binTemp.append('0');
+                }
+            }
+        }
+        if(binTemp.length()>0){
+            binTemp.append("11");
+            part1.append(binToHex(binTemp.toString()));
+        }
+        System.out.println(part1);
+
+        return part1.toString();
+    }
+
+    //Part 2 of mdf string, is the grid a wall or not
+    public String GetMdfStringIsWall(){
+        StringBuilder part2 = new StringBuilder();
+        StringBuffer binTemp = new StringBuffer(4);
+
+        for(int y=0; y<MAP_CONST.MAP_GRID_HEIGHT; ++y){
+            for(int x=0; x<MAP_CONST.MAP_GRID_WIDTH; ++x){
+                if(binTemp.length()==4){
+                    part2.append(binToHex(binTemp.toString()));
+                    binTemp.delete(0, binTemp.capacity());
+                }
+                if(fullMap[y][x].isExplored){
+                    if(fullMap[y][x].isTrueWall){
+                        binTemp.append('1');
+                    }else{
+                        binTemp.append('0');
+                    }
+                }
+            }
+        }
+
+        if(binTemp.length()>0){
+            part2.append(binToHex(binTemp.toString()));
+        }
+
+        System.out.println(part2.toString());
+
+        return part2.toString();
+    }
 }

@@ -12,7 +12,6 @@ import robot.Robot;
 import static robot.ORIENTATION.*;
 
 //TODO
-// Create MDF String from map info
 // Send the mdf string to rpi, then to android
 // Send command to rpi then to robot
 // Receive image coords and id from rpi
@@ -456,5 +455,4 @@ public class Controller {
     public ORIENTATION getRobotOrientation(){
         return virtualRobot.getRobotOrientation();
     }
-
 }
