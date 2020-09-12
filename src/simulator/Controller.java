@@ -9,6 +9,8 @@ import map.True_Map;
 import robot.ORIENTATION;
 import robot.Robot;
 
+import java.util.ArrayList;
+
 import static robot.ORIENTATION.*;
 
 //TODO
@@ -16,7 +18,6 @@ import static robot.ORIENTATION.*;
 // Send command to rpi then to robot
 // Receive image coords and id from rpi
 // Add Fastest path waypoint to the fastest path algo
-// Use fastest path algo to visit unexplored part of the map in exploration algo, then go back to start zone (MUST)
 // Optimize fastest path and exploration to not move the robot one tile at a time, but 1-9 tiles
 // Android has a message that moves it 1-9 tile ahead, and turn left/right, for fastest path ONLY for now
 
@@ -63,7 +64,6 @@ public class Controller {
 
     public void run() throws InterruptedException {
         ui.CreateUI();
-        //ExploreArena();
     }
 
     public int[] getRobotPos(){
@@ -85,6 +85,7 @@ public class Controller {
         isArenaExplored=true;
     }
 
+    //Default fastest path to Finish
     public void runFastestPath() throws InterruptedException {
         if(!isArenaExplored){
             System.out.println("Please explore the arena first");
@@ -93,16 +94,36 @@ public class Controller {
         fastestPathAlgo.runFastestPath(MAP_CONST.FINISH_ZONE_CENTER_X, MAP_CONST.FINISH_ZONE_CENTER_Y);
     }
 
+    public void runFastestPath(int destX, int destY) throws InterruptedException {
+        if(!isArenaExplored){
+            System.out.println("Please explore the arena first");
+            return;
+        }
+        fastestPathAlgo.runFastestPath(destX, destY);
+    }
+
+    //Called when ExploreTask in ExplorationAlgorithm has finished
+    public void exploredUnexploredTiles() throws InterruptedException {
+        ArrayList<int[]> unexplored = arena.getUnexploredCoords();
+        //Go to unexplored part, or if there are none go to start(should already be at the start)
+        if(!unexplored.isEmpty()){
+            runFastestPath(unexplored.get(unexplored.size()-1)[0], unexplored.get(unexplored.size()-1)[1]);
+        }else{
+            robotGoToStart();
+        }
+    }
+
+    public void robotGoToStart() throws InterruptedException {
+        runFastestPath(MAP_CONST.ROBOT_START_ZONE_CENTER_X, MAP_CONST.ROBOT_START_ZONE_CENTER_Y);
+    }
+
+
     public void robotTurnRight() throws InterruptedException {
         virtualRobot.Turn_Right();
-        //ui.repaint();
-        //Thread.sleep(200);
     }
 
     public void robotTurnLeft() throws InterruptedException {
         virtualRobot.Turn_Left();
-        //ui.repaint();
-        //Thread.sleep(200);
     }
 
     private void updateVirtualArena(int coordX, int coordY, boolean isWall){
@@ -113,7 +134,6 @@ public class Controller {
     }
 
 
-    //TODO CHANGE TO USE SENSOR, BOTH VIRTUAL AND PHYSICAL
     public boolean checkRobotFront(){
         int[] robotPos = virtualRobot.getRobotPosition();
         switch(virtualRobot.getRobotOrientation()){
@@ -224,6 +244,7 @@ public class Controller {
         }
     }
 
+    //Sensors maybe can be moved to a seperate Sensor class when integrated to real robot
     public void checkRobotFrontSensor(){
         int[] robotPos = virtualRobot.getRobotPosition();
         int robotX = robotPos[0];
@@ -444,7 +465,6 @@ public class Controller {
     }
 
     public boolean checkIsAccessible(int posX, int posY){
-
         if(arena.CheckIsAccessible(posX,posY)==ACCESS.YES){
             return true;
         }else{
@@ -455,4 +475,32 @@ public class Controller {
     public ORIENTATION getRobotOrientation(){
         return virtualRobot.getRobotOrientation();
     }
+
+    //Get unexplored coordinates
+    public ArrayList<int[]> getMapUnexplored(){
+        return arena.getUnexploredCoords();
+    }
+
+    //Reset robot orientation to north
+    public void resetRobotOrientation() throws InterruptedException {
+        System.out.println(getRobotOrientation());
+        switch (getRobotOrientation()){
+            case NORTH:
+                break;
+            case SOUTH:
+                //Maybe implement U-Turn?
+                robotTurnRight();
+                robotTurnRight();
+                break;
+            case EAST:
+                robotTurnLeft();
+                break;
+            case WEST:
+                System.out.println("turning right");
+                robotTurnRight();
+                break;
+        }
+        ui.repaint();
+    }
+
 }

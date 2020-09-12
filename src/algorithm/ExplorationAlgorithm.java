@@ -5,6 +5,7 @@ import simulator.Controller;
 import simulator.UIController;
 
 import javax.swing.*;
+import java.util.ArrayList;
 import java.util.List;
 
 public class ExplorationAlgorithm {
@@ -25,34 +26,10 @@ public class ExplorationAlgorithm {
         }
     }
     public void exploreArena() throws InterruptedException {
-        //May need this part when using the real robot, it's the same as the one below
-        /*int[] startPos = {map.MAP_CONST.ROBOT_START_ZONE_CENTER_X, map.MAP_CONST.ROBOT_START_ZONE_CENTER_Y};
-        int[] currRobotPos = virtualRobot.getRobotPosition();
-        do {
-            if (CheckLeftIsAccessible(currRobotPos[0], currRobotPos[1])) {
-                robotTurnLeft();
-                robotMoveForward();
-            }else {
-                if(!checkRobotFront()){
-                    robotTurnRight();
-                }
-                robotMoveForward();
-            }
-            Thread.sleep(200);
-            ui.repaint();
-            currRobotPos=virtualRobot.getRobotPosition();
-
-            /*if(currRobotPos[0]==startPos[0] && currRobotPos[1] == startPos[1]){
-                System.out.println("robot returned");
-            }else{
-                System.out.println("robot at : "+currRobotPos[0] + ", " + currRobotPos[1]);
-                System.out.println("starting point at: "+startPos[0]+ ", " + startPos[1]);
-            }
-        } while (currRobotPos[0] != startPos[0] || currRobotPos[1] !=startPos[1]);*/
-
-
         ExploreTask explore = new ExploreTask();
         explore.execute();
+
+
     }
 
     //Exploration class multithreading
@@ -82,15 +59,25 @@ public class ExplorationAlgorithm {
                 publish(currRobotPos);
 
             } while (currRobotPos[0] != startPos[0] || currRobotPos[1] !=startPos[1]);
+
             //Turn north when arrived back at starting position
-            mController.robotTurnRight();
+            mController.resetRobotOrientation();
             return null;
         }
 
         @Override
         protected void process(List<int[]> robotCoords) {
-            int[] coords = robotCoords.get(robotCoords.size()-1);
             ui.repaint();
+        }
+
+        @Override
+        protected void done() {
+            super.done();
+            try {
+                mController.exploredUnexploredTiles();
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
         }
     }
 }

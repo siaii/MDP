@@ -44,6 +44,7 @@ public class Map {
     public void SetTrueWallAt(int xPos, int yPos){
         //The actual wall
         fullMap[yPos][xPos].SetTrueWall(true);
+        fullMap[yPos][xPos].SetVirtualWall(true);
 
         //The virtual wall on the surrounding 8 cells
         if(yPos>0){
@@ -92,7 +93,7 @@ public class Map {
         }
         if(fullMap[y][x].isExplored){
             //Inaccessible by robot is virtual wall is true
-            if(fullMap[y][x].GetVirtualWall()){
+            if(fullMap[y][x].GetVirtualWall() || fullMap[y][x].GetTrueWall()){
                 return ACCESS.NO;
             }else{
                 return ACCESS.YES;
@@ -114,7 +115,7 @@ public class Map {
         }
     }
 
-    private ArrayList<int[]> getUnexploredCoords(){
+    public ArrayList<int[]> getUnexploredCoords(){
         ArrayList<int[]> unexploredTiles = new ArrayList<int[]>();
         for(int i=0; i<MAP_CONST.MAP_GRID_HEIGHT-1; ++i){
             for(int j=0; j<MAP_CONST.MAP_GRID_WIDTH-1; ++j){

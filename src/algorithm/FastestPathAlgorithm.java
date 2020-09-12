@@ -15,6 +15,9 @@ public class FastestPathAlgorithm {
     private ArrayList<ORIENTATION> pathToTake;
     private int searchCountTimeout = 1000;
     private String pathString;
+    private boolean explorationMode = true;
+    private boolean goingToStart = false;
+    FastestPathTask fastestPathTask;
 
     private gridNode[][] gridNodeArray = new gridNode[MAP_CONST.MAP_GRID_HEIGHT][MAP_CONST.MAP_GRID_WIDTH];
 
@@ -53,7 +56,16 @@ public class FastestPathAlgorithm {
     private void initCostArray(){
         for(int x=0; x<MAP_CONST.MAP_GRID_WIDTH; ++x){
             for(int y=0; y<MAP_CONST.MAP_GRID_HEIGHT; ++y){
-                gridNodeArray[y][x] = new gridNode(mainController.checkIsAccessible(x,y), x, y);
+                if(gridNodeArray[y][x]==null){
+                    gridNodeArray[y][x] = new gridNode(mainController.checkIsAccessible(x,y), x, y);
+                }else{
+                    gridNodeArray[y][x].fromNode=null;
+                    gridNodeArray[y][x].gCost=MAP_CONST.INFINITE_COST;
+                    gridNodeArray[y][x].totalCost=MAP_CONST.INFINITE_COST;
+                    gridNodeArray[y][x].isExplored=false;
+                    gridNodeArray[y][x].isAccessible=mainController.checkIsAccessible(x,y);
+                }
+
             }
         }
     }
@@ -107,17 +119,19 @@ public class FastestPathAlgorithm {
             System.out.println("Robot already at destination");
             return;
         }
+        initCostArray();
+        if(gridNodeArray[destPosY][destPosX].isAccessible==false){
+            gridNodeArray[destPosY][destPosX].isAccessible=true;
+        }
         findFastestPath(destPosX, destPosY);
-        getFastestPath();
-        FastestPathTask fastestPathTask = new FastestPathTask();
+        getFastestPath(destPosX, destPosY);
+        fastestPathTask = new FastestPathTask();
         fastestPathTask.execute();
     }
 
     //Using A* Algorithm
     public void findFastestPath(int destPosX, int destPosY){
-        initCostArray();
         ArrayList<gridNode> openNodes = new ArrayList<gridNode>();
-        ArrayList<gridNode> closedNodes = new ArrayList<gridNode>();
         int[] robotInitialPos = mainController.getRobotPos();
         //The start node
         gridNode currNode;
@@ -143,7 +157,7 @@ public class FastestPathAlgorithm {
                 System.out.println("Path not found");
                 break;
             }
-            System.out.println("Exploring cell : "+currNode.nodePos[0]+", "+currNode.nodePos[1]);
+            //System.out.println("Exploring cell : "+currNode.nodePos[0]+", "+currNode.nodePos[1]);
 
             openNodes.remove(currNode);
             currNode.isExplored=true;
@@ -189,14 +203,15 @@ public class FastestPathAlgorithm {
         System.out.println("Path found!");
     }
 
-    public void getFastestPath() throws InterruptedException {
+    public void getFastestPath(int destPosX, int destPosY) throws InterruptedException {
         ArrayList<gridNode> pathToTake = new ArrayList<>();
+        int[] robotStartPos = mainController.getRobotPos();
 
-        gridNode currNode = gridNodeArray[MAP_CONST.FINISH_ZONE_CENTER_Y][MAP_CONST.FINISH_ZONE_CENTER_X];
+        gridNode currNode = gridNodeArray[destPosY][destPosX];
         do{
             pathToTake.add(currNode);
             currNode = currNode.fromNode;
-        }while(currNode!=gridNodeArray[MAP_CONST.ROBOT_START_ZONE_CENTER_Y][MAP_CONST.ROBOT_START_ZONE_CENTER_X]);
+        }while(currNode!=gridNodeArray[robotStartPos[1]][robotStartPos[0]]);
 
         //Add the starting node to arraylist
         pathToTake.add(currNode);
@@ -204,7 +219,7 @@ public class FastestPathAlgorithm {
         Collections.reverse(pathToTake);
         for(int i=0; i<pathToTake.size(); ++i){
             gridNode temp = pathToTake.get(i);
-            System.out.printf("%d, %d\n", temp.nodePos[0], temp.nodePos[1]);
+            //System.out.printf("%d, %d\n", temp.nodePos[0], temp.nodePos[1]);
         }
 
         pathString = turnPathToDirection(pathToTake);
@@ -230,7 +245,7 @@ public class FastestPathAlgorithm {
                         currOrientation=ORIENTATION.NORTH;
                         break;
                     case SOUTH:
-                        robotMovement.append("U"); //Should not happen
+                        robotMovement.append("UF"); //Should not happen in fastest to goal
                         currOrientation=ORIENTATION.NORTH;
                         break;
                 }
@@ -239,7 +254,7 @@ public class FastestPathAlgorithm {
             else if(path.get(i).nodePos[1]-path.get(i-1).nodePos[1]>0){
                 switch (currOrientation){
                     case NORTH:
-                        robotMovement.append("U"); //Should not happen
+                        robotMovement.append("UF"); //Should not happen in fastest to goal
                         currOrientation=ORIENTATION.SOUTH;
                         break;
                     case EAST:
@@ -264,7 +279,7 @@ public class FastestPathAlgorithm {
                         currOrientation=ORIENTATION.WEST;
                         break;
                     case EAST:
-                        robotMovement.append("U"); //Should not happen
+                        robotMovement.append("UF"); //Should not happen in fastest to goal
                         currOrientation=ORIENTATION.WEST;
                         break;
                     case WEST:
@@ -289,7 +304,7 @@ public class FastestPathAlgorithm {
                         currOrientation=ORIENTATION.EAST;
                         break;
                     case WEST:
-                        robotMovement.append("U"); //Should not happen
+                        robotMovement.append("UF"); //Should not happen in fastest to goal
                         currOrientation=ORIENTATION.EAST;
                         break;
                     case SOUTH:
@@ -335,7 +350,7 @@ public class FastestPathAlgorithm {
                     System.out.println("Something is wrong in the path");
                     break;
             }
-            Thread.sleep(200);
+            Thread.sleep(10);
         }
     }
 
@@ -355,7 +370,8 @@ public class FastestPathAlgorithm {
                         mainController.robotTurnLeft();
                         break;
                     default:
-                        System.out.println("Something is wrong in the path");
+                        mainController.robotTurnRight();
+                        mainController.robotTurnRight();
                         break;
                 }
                 publish();
@@ -369,6 +385,45 @@ public class FastestPathAlgorithm {
         protected void process(List<int[]> chunks) {
             super.process(chunks);
             ui.repaint();
+        }
+
+        @Override
+        protected void done() {
+            //Only process if currently still in exploration moed
+            if(explorationMode){
+                //If going back to start after exploration has finished
+                if(goingToStart){
+                    goingToStart=false;
+                    explorationMode=false;
+                    try {
+                        mainController.resetRobotOrientation();
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+                }else{
+                    ArrayList<int[]> unexplored = mainController.getMapUnexplored();
+
+                    if(!unexplored.isEmpty()){
+                        try {
+                            //Update the gridCost array to new map values
+                            initCostArray();
+                            mainController.resetRobotOrientation();
+
+                            //Visit from the back because it is closer to Start, (0,0) is on top left corner
+                            mainController.runFastestPath(unexplored.get(unexplored.size()-1)[0], unexplored.get(unexplored.size()-1)[1]);
+                        } catch (InterruptedException e) {
+                            e.printStackTrace();
+                        }
+                    }else{
+                        try {
+                            goingToStart=true;
+                            mainController.robotGoToStart();
+                        } catch (InterruptedException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                }
+            }
         }
     }
 
