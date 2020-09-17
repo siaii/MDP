@@ -107,6 +107,10 @@ public class Map {
         fullMap[yPos][xPos].isExplored=true;
     }
 
+    public boolean GetExplored(int xPos, int yPos){
+        return fullMap[yPos][xPos].isExplored;
+    }
+
     private void InitStartZone(){
         for(int i=-1; i<=1; ++i){
             for(int j=-1; j<=1; j++){

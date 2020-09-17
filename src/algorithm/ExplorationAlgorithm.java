@@ -2,15 +2,18 @@ package algorithm;
 
 import map.MAP_CONST;
 import simulator.Controller;
+import simulator.MODE;
 import simulator.UIController;
 
 import javax.swing.*;
-import java.util.ArrayList;
 import java.util.List;
 
 public class ExplorationAlgorithm {
     private Controller mController;
     private UIController ui;
+    private MODE explorationMode;
+    private long durationMillis;
+    private long endTime;
 
     public ExplorationAlgorithm(){
         mController = Controller.getInstance();
@@ -26,10 +29,15 @@ public class ExplorationAlgorithm {
         }
     }
     public void exploreArena() throws InterruptedException {
+        durationMillis=mController.getExploreDuration();
+        endTime=System.currentTimeMillis()+durationMillis;
         ExploreTask explore = new ExploreTask();
         explore.execute();
 
+    }
 
+    public void setMode(MODE mode){
+        explorationMode=mode;
     }
 
     //Exploration class multithreading
@@ -39,6 +47,16 @@ public class ExplorationAlgorithm {
             int[] startPos = {MAP_CONST.ROBOT_START_ZONE_CENTER_X, MAP_CONST.ROBOT_START_ZONE_CENTER_Y};
             int[] currRobotPos = mController.getRobotPos();
             do {
+                if(explorationMode==MODE.TIMELIMITED){
+                    if(System.currentTimeMillis()>endTime){
+                        System.out.println("Time's Up!");
+                        break;
+                    }
+                }else if(explorationMode==MODE.COVERAGELIMITED){
+                    if(mController.hasFulfilledCoverage()){
+                        break;
+                    }
+                }
                 //If the left side of robot is accessible, then the robot will go there
                 if (mController.CheckLeftIsAccessible(currRobotPos[0], currRobotPos[1])) {
                     mController.robotTurnLeft();
@@ -74,7 +92,12 @@ public class ExplorationAlgorithm {
         protected void done() {
             super.done();
             try {
-                mController.exploredUnexploredTiles();
+                if(explorationMode==MODE.DEFAULT){
+                    mController.exploredUnexploredTiles();
+                }else{
+                    mController.setFastestPathGoingToStart();
+                    mController.robotGoToStart();
+                }
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }

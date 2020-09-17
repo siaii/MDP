@@ -79,6 +79,22 @@ public class Robot {
         }
     }
 
+    public void Move_Forward(int steps){
+        switch (robotOrientation){
+            case NORTH:
+                robotPosition[1]-=steps;
+                break;
+            case SOUTH:
+                robotPosition[1]+=steps;
+                break;
+            case WEST:
+                robotPosition[0]-=steps;
+                break;
+            case EAST:
+                robotPosition[0]+=steps;
+        }
+    }
+
     public void Move_Back(){
         switch (robotOrientation){
             case NORTH:

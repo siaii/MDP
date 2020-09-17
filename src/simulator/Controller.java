@@ -70,9 +70,15 @@ public class Controller {
         return virtualRobot.getRobotPosition();
     }
 
+    //Default move forward 1 step
     public void robotMoveForward() throws InterruptedException {
+        robotMoveForward(1);
+    }
+
+    //Check if the "steps" steps in front is accessible or not (should be in checkRobotFront?)
+    public void robotMoveForward(int steps) throws InterruptedException {
         if(checkRobotFront()){
-            virtualRobot.Move_Forward();
+            virtualRobot.Move_Forward(steps);
             checkRobotRightSensor();
             checkRobotLeftSensor();
         }else{
@@ -81,6 +87,7 @@ public class Controller {
     }
 
     public void startExploration() throws InterruptedException {
+        exploreAlgo.setMode(ui.getExploreMode());
         exploreAlgo.exploreArena();
         isArenaExplored=true;
     }
@@ -503,4 +510,34 @@ public class Controller {
         ui.repaint();
     }
 
+    private float calculateMapCoverage(){
+        float res=0;
+        for(int y=0; y<MAP_CONST.MAP_GRID_HEIGHT; ++y){
+            for(int x=0; x<MAP_CONST.MAP_GRID_WIDTH; ++x){
+                if(arena.GetExplored(x,y)){
+                    res+=1f;
+                }
+            }
+        }
+
+        return res/(MAP_CONST.MAP_GRID_HEIGHT*MAP_CONST.MAP_GRID_WIDTH);
+    }
+
+    public boolean hasFulfilledCoverage(){
+        float cov=ui.getCoverage();
+        if(calculateMapCoverage()>=cov){
+            System.out.println("Coverage is "+cov*100+"%");
+            return true;
+        }else{
+            return false;
+        }
+    }
+
+    public void setFastestPathGoingToStart(){
+        fastestPathAlgo.setGoingToStart();
+    }
+
+    public int getExploreDuration(){
+        return ui.getExploreDuration();
+    }
 }

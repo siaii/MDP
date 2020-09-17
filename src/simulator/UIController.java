@@ -4,15 +4,25 @@ import map.MAP_CONST;
 import map.MapCanvas;
 
 import javax.swing.*;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.sql.Time;
+import java.time.Duration;
+import java.util.concurrent.TimeUnit;
 
 public class UIController extends JFrame {
     private static UIController _instance;
     private Controller mainController;
     private JPanel mapPanel;
     private JPanel buttonPanel; //TODO not permanent (maybe?)
+    private JPanel settingPanel;
+    private MODE exploreMode=MODE.DEFAULT;
+    private int minDuration;
+    private int secDuration;
+    private float coverage=1f;
 
     public UIController(){
         super("Map Test");
@@ -39,6 +49,7 @@ public class UIController extends JFrame {
 
         mapPanel = new MapCanvas();
         buttonPanel = new JPanel();
+        settingPanel = new JPanel();
 
         mapPanel.setBounds(MAP_CONST.CELL_START_X, MAP_CONST.CELL_START_Y,MAP_CONST.MAP_GRID_WIDTH*MAP_CONST.MAP_CELL_SIZE, MAP_CONST.MAP_GRID_HEIGHT*MAP_CONST.MAP_CELL_SIZE);
         mapPanel.setPreferredSize(new Dimension(MAP_CONST.MAP_GRID_WIDTH*MAP_CONST.MAP_CELL_SIZE+MAP_CONST.CELL_START_X*2, MAP_CONST.MAP_GRID_HEIGHT*MAP_CONST.MAP_CELL_SIZE+MAP_CONST.CELL_START_Y*2));
@@ -46,9 +57,11 @@ public class UIController extends JFrame {
         buttonPanel.setBounds(400, 400, 400, 300);
 
         CreateButtons(buttonPanel);
+        CreateSettings(settingPanel);
 
         container.add(mapPanel);
         container.add(buttonPanel);
+        container.add(settingPanel);
         add(container);
         pack();
     }
@@ -90,5 +103,114 @@ public class UIController extends JFrame {
         buttonPanel.add(fastestBut);
     }
 
+    public void CreateSettings(JPanel settingPanel){
+        JTabbedPane tabbedPane = new JTabbedPane();
+        JComponent defaultPanel = makeMainSettingPanel();
+        JComponent timePanel = makeTimeLimitedPanel();
+        JComponent coveragePanel = makeCoverageLimitedPanel();
 
+        tabbedPane.addTab("Main Settings", defaultPanel);
+        tabbedPane.addTab("Time-Limited Settings", timePanel);
+        tabbedPane.addTab("Coverage-Limited Settings", coveragePanel);
+
+        settingPanel.add(tabbedPane);
+    }
+
+    private JPanel makeMainSettingPanel(){
+        JPanel panel = new JPanel();
+        JRadioButton defaultButton = new JRadioButton("Default");
+        defaultButton.setSelected(true);
+        defaultButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                exploreMode=MODE.DEFAULT;
+            }
+        });
+        JRadioButton timeLimitedButton = new JRadioButton("Time-Limited");
+        timeLimitedButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                exploreMode=MODE.TIMELIMITED;
+            }
+        });
+        JRadioButton coverageLimitedButton = new JRadioButton("Coverage-Limited");
+        coverageLimitedButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                exploreMode=MODE.COVERAGELIMITED;
+            }
+        });
+        ButtonGroup radioGroup = new ButtonGroup();
+        radioGroup.add(defaultButton);
+        radioGroup.add(timeLimitedButton);
+        radioGroup.add(coverageLimitedButton);
+
+        panel.add(defaultButton);
+        panel.add(timeLimitedButton);
+        panel.add(coverageLimitedButton);
+
+        return panel;
+    }
+
+    private JPanel makeTimeLimitedPanel(){
+        JPanel panel = new JPanel();
+        panel.setLayout(new GridLayout(0,4));
+        JSpinner minSpinner = new JSpinner(new SpinnerNumberModel(6, 0, 100, 1));
+        minSpinner.addChangeListener(new ChangeListener() {
+            @Override
+            public void stateChanged(ChangeEvent e) {
+                minDuration = (int) minSpinner.getValue();
+            }
+        });
+        JSpinner secSpinner = new JSpinner(new SpinnerNumberModel(0, 0, 60, 1));
+        secSpinner.addChangeListener(new ChangeListener() {
+            @Override
+            public void stateChanged(ChangeEvent e) {
+                secDuration = (int) secSpinner.getValue();
+            }
+        });
+        JLabel minLabel = new JLabel("Minutes");
+        JLabel secLabel = new JLabel("Seconds");
+        panel.add(minLabel);
+        panel.add(minSpinner);
+        panel.add(secLabel);
+        panel.add(secSpinner);
+
+        return panel;
+    }
+
+    private JPanel makeCoverageLimitedPanel(){
+        JPanel panel = new JPanel();
+        panel.setLayout(new GridLayout(0,2));
+        JSpinner percSpinner = new JSpinner(new SpinnerNumberModel(100, 0, 100, 1));
+        percSpinner.addChangeListener(new ChangeListener() {
+            @Override
+            public void stateChanged(ChangeEvent e) {
+                coverage= (Integer)percSpinner.getValue();
+            }
+        });
+        JLabel percLabel = new JLabel("Coverage Limit (%)");
+        panel.add(percLabel);
+        panel.add(percSpinner);
+
+        return panel;
+    }
+
+    public MODE getExploreMode(){
+        return exploreMode;
+    }
+
+    /*
+    * in milis
+    * */
+    public int getExploreDuration(){
+        int dur = 0;
+        dur+= TimeUnit.MINUTES.toMillis(minDuration);
+        dur+= TimeUnit.SECONDS.toMillis(secDuration);
+        return dur;
+    }
+
+    public float getCoverage(){
+        return coverage/100f;
+    }
 }

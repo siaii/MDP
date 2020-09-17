@@ -334,6 +334,10 @@ public class FastestPathAlgorithm {
         }
     }
 
+    public void setGoingToStart(){
+        goingToStart=true;
+    }
+
     private void executeFastestPath(String pathString) throws InterruptedException {
         for(int i=0; i<pathString.length(); ++i){
             switch (pathString.charAt(i)){
