@@ -540,4 +540,9 @@ public class Controller {
     public int getExploreDuration(){
         return ui.getExploreDuration();
     }
+
+    public int getRobotMoveSpeed(){
+        int stepPerSec = ui.getStepsPerSec();
+        return 1000/stepPerSec;
+    }
 }

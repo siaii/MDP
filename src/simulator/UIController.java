@@ -23,6 +23,7 @@ public class UIController extends JFrame {
     private int minDuration;
     private int secDuration;
     private float coverage=1f;
+    private int stepsPerSec=5;
 
     public UIController(){
         super("Map Test");
@@ -117,7 +118,9 @@ public class UIController extends JFrame {
     }
 
     private JPanel makeMainSettingPanel(){
-        JPanel panel = new JPanel();
+        JPanel mainPanel = new JPanel(new GridLayout(2,0));
+        JPanel panel1 = new JPanel();
+        JLabel modeLabel = new JLabel("Mode:");
         JRadioButton defaultButton = new JRadioButton("Default");
         defaultButton.setSelected(true);
         defaultButton.addActionListener(new ActionListener() {
@@ -145,11 +148,25 @@ public class UIController extends JFrame {
         radioGroup.add(timeLimitedButton);
         radioGroup.add(coverageLimitedButton);
 
-        panel.add(defaultButton);
-        panel.add(timeLimitedButton);
-        panel.add(coverageLimitedButton);
+        panel1.add(modeLabel);
+        panel1.add(defaultButton);
+        panel1.add(timeLimitedButton);
+        panel1.add(coverageLimitedButton);
 
-        return panel;
+        JPanel stepSpeedPanel = new JPanel(new GridLayout(0,2));
+        JLabel speedLabel = new JLabel("Steps per second: ");
+        JSpinner speedInput = new JSpinner(new SpinnerNumberModel(5, 1, 20, 1));
+        speedInput.addChangeListener(new ChangeListener() {
+            @Override
+            public void stateChanged(ChangeEvent e) {
+                stepsPerSec=(Integer) speedInput.getValue();
+            }
+        });
+        stepSpeedPanel.add(speedLabel);
+        stepSpeedPanel.add(speedInput);
+        mainPanel.add(panel1);
+        mainPanel.add(stepSpeedPanel);
+        return mainPanel;
     }
 
     private JPanel makeTimeLimitedPanel(){
@@ -212,5 +229,9 @@ public class UIController extends JFrame {
 
     public float getCoverage(){
         return coverage/100f;
+    }
+
+    public int getStepsPerSec(){
+        return stepsPerSec;
     }
 }

@@ -14,6 +14,7 @@ public class ExplorationAlgorithm {
     private MODE explorationMode;
     private long durationMillis;
     private long endTime;
+    private int stepCD;
 
     public ExplorationAlgorithm(){
         mController = Controller.getInstance();
@@ -30,6 +31,7 @@ public class ExplorationAlgorithm {
     }
     public void exploreArena() throws InterruptedException {
         durationMillis=mController.getExploreDuration();
+        stepCD=mController.getRobotMoveSpeed();
         endTime=System.currentTimeMillis()+durationMillis;
         ExploreTask explore = new ExploreTask();
         explore.execute();
@@ -72,7 +74,7 @@ public class ExplorationAlgorithm {
 
                 //Sleep is for simulator only
 
-                Thread.sleep(200); //TODO change back to 200, this is only for fastest path testing
+                Thread.sleep(stepCD); //TODO change back to 200, this is only for fastest path testing
                 currRobotPos=mController.getRobotPos();
                 publish(currRobotPos);
 

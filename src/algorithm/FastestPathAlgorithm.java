@@ -17,6 +17,8 @@ public class FastestPathAlgorithm {
     private String pathString;
     private boolean explorationMode = true;
     private boolean goingToStart = false;
+    private boolean isPathFound;
+    private int stepCD;
     FastestPathTask fastestPathTask;
 
     private gridNode[][] gridNodeArray = new gridNode[MAP_CONST.MAP_GRID_HEIGHT][MAP_CONST.MAP_GRID_WIDTH];
@@ -115,6 +117,7 @@ public class FastestPathAlgorithm {
 
     public void runFastestPath(int destPosX, int destPosY) throws InterruptedException {
         int[] robotInitialPos = mainController.getRobotPos();
+        stepCD=mainController.getRobotMoveSpeed();
         if(robotInitialPos[0]==destPosX && robotInitialPos[1]==destPosY){
             System.out.println("Robot already at destination");
             return;
@@ -124,15 +127,21 @@ public class FastestPathAlgorithm {
             gridNodeArray[destPosY][destPosX].isAccessible=true;
         }
         findFastestPath(destPosX, destPosY);
-        getFastestPath(destPosX, destPosY);
-        fastestPathTask = new FastestPathTask();
-        fastestPathTask.execute();
+        if(isPathFound){
+            getFastestPath(destPosX, destPosY);
+            fastestPathTask = new FastestPathTask();
+            fastestPathTask.execute();
+        }else{
+            System.out.println("Path not found");
+        }
     }
 
     //Using A* Algorithm
     public void findFastestPath(int destPosX, int destPosY){
         ArrayList<gridNode> openNodes = new ArrayList<gridNode>();
         int[] robotInitialPos = mainController.getRobotPos();
+        isPathFound=true;
+
         //The start node
         gridNode currNode;
         gridNode startNode = gridNodeArray[robotInitialPos[1]][robotInitialPos[0]];
@@ -148,13 +157,13 @@ public class FastestPathAlgorithm {
         do{
             count++;
             if(count>searchCountTimeout){
-                System.out.println("Path not found!");
+                isPathFound=false;
                 break;
             }
 
             currNode = getLowestFCost(openNodes);
             if(currNode==null){
-                System.out.println("Path not found");
+                isPathFound=false;
                 break;
             }
             //System.out.println("Exploring cell : "+currNode.nodePos[0]+", "+currNode.nodePos[1]);
@@ -200,7 +209,9 @@ public class FastestPathAlgorithm {
             }
         //Loop until it reaches
         }while(currNode.nodePos[0] != destPosX || currNode.nodePos[1] !=destPosY);
-        System.out.println("Path found!");
+        if(isPathFound){
+            System.out.println("Path found!");
+        }
     }
 
     public void getFastestPath(int destPosX, int destPosY) throws InterruptedException {
@@ -379,7 +390,7 @@ public class FastestPathAlgorithm {
                         break;
                 }
                 publish();
-                Thread.sleep(200);
+                Thread.sleep(stepCD);
             }
             System.out.println("Reached target destination");
             return null;
