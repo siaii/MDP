@@ -256,7 +256,7 @@ public class FastestPathAlgorithm {
                         currOrientation=ORIENTATION.NORTH;
                         break;
                     case SOUTH:
-                        robotMovement.append("UF"); //Should not happen in fastest to goal
+                        robotMovement.append("RRF"); //Should not happen in fastest to goal
                         currOrientation=ORIENTATION.NORTH;
                         break;
                 }
@@ -265,7 +265,7 @@ public class FastestPathAlgorithm {
             else if(path.get(i).nodePos[1]-path.get(i-1).nodePos[1]>0){
                 switch (currOrientation){
                     case NORTH:
-                        robotMovement.append("UF"); //Should not happen in fastest to goal
+                        robotMovement.append("RRF"); //Should not happen in fastest to goal
                         currOrientation=ORIENTATION.SOUTH;
                         break;
                     case EAST:
@@ -290,7 +290,7 @@ public class FastestPathAlgorithm {
                         currOrientation=ORIENTATION.WEST;
                         break;
                     case EAST:
-                        robotMovement.append("UF"); //Should not happen in fastest to goal
+                        robotMovement.append("RRF"); //Should not happen in fastest to goal
                         currOrientation=ORIENTATION.WEST;
                         break;
                     case WEST:
@@ -315,7 +315,7 @@ public class FastestPathAlgorithm {
                         currOrientation=ORIENTATION.EAST;
                         break;
                     case WEST:
-                        robotMovement.append("UF"); //Should not happen in fastest to goal
+                        robotMovement.append("RRF"); //Should not happen in fastest to goal
                         currOrientation=ORIENTATION.EAST;
                         break;
                     case SOUTH:
