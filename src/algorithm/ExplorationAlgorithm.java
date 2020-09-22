@@ -6,6 +6,7 @@ import simulator.MODE;
 import simulator.UIController;
 
 import javax.swing.*;
+import java.util.ArrayList;
 import java.util.List;
 
 public class ExplorationAlgorithm {
@@ -62,14 +63,16 @@ public class ExplorationAlgorithm {
                 //If the left side of robot is accessible, then the robot will go there
                 if (mController.CheckLeftIsAccessible(currRobotPos[0], currRobotPos[1])) {
                     mController.robotTurnLeft();
-                    mController.robotMoveForward();
+                    if(mController.checkRobotFront()){
+                        mController.robotMoveForward();
+                    }
                 }else {
                     //If the robot's front is inaccessible, turn right
-                    if(!mController.checkRobotFront()){
+                    if(mController.checkRobotFront()){
+                        mController.robotMoveForward();
+                    }else{
                         mController.robotTurnRight();
                     }
-
-                    mController.robotMoveForward();
                 }
 
                 //Sleep is for simulator only
@@ -126,6 +129,7 @@ public class ExplorationAlgorithm {
         protected Void doInBackground() throws Exception {
             int[] startPos = {MAP_CONST.ROBOT_START_ZONE_CENTER_X, MAP_CONST.ROBOT_START_ZONE_CENTER_Y};
             int[] currRobotPos = mController.getRobotPos();
+            ArrayList<obstacleGroup> obsArr = new ArrayList<>();
             do {
                 if(explorationMode==MODE.TIMELIMITED){
                     if(System.currentTimeMillis()>endTime){
@@ -149,9 +153,20 @@ public class ExplorationAlgorithm {
 
                     mController.robotMoveForward();
                 }
+                //Distance from center of robot
+                int[] wall = mController.checkTrueWall(4);
+                if(wall != null){
+                    if(obsArr.isEmpty()){
+                        obstacleGroup grp = new obstacleGroup(wall[0], wall[1], wall[0], wall[1]);
+                        obsArr.add(grp);
+                    }else{
+                        for (var obsGrp: obsArr) {
+                            //TODO this part
+                        }
+                    }
+                }
 
                 //Sleep is for simulator only
-
                 Thread.sleep(stepCD);
                 currRobotPos=mController.getRobotPos();
 

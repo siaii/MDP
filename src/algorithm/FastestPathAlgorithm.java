@@ -119,6 +119,7 @@ public class FastestPathAlgorithm {
         int[] robotInitialPos = mainController.getRobotPos();
         stepCD=mainController.getRobotMoveSpeed();
         if(robotInitialPos[0]==destPosX && robotInitialPos[1]==destPosY){
+            if(explorationMode) explorationMode=false;
             System.out.println("Robot already at destination");
             return;
         }

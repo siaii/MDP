@@ -75,6 +75,10 @@ public class Map {
         }
     }
 
+    public boolean GetTrueWallAt(int xPos, int yPos){
+        return fullMap[yPos][xPos].isTrueWall;
+    }
+
 
     public int GetMapHeight(){
         return fullMap.length;

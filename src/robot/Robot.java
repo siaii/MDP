@@ -9,26 +9,67 @@ public class Robot {
     private Controller mainController;
     private ORIENTATION robotOrientation;
     private int[] robotPosition = new int[2];
+    private boolean isRealBot;
 
-    public Robot(int startX, int startY, ORIENTATION startOrientation){
+    /*
+        Sensor format: Direction_Row_Col_Sensor
+     */
+
+    private Sensor Front_Front_Left_Sensor;
+    private Sensor Front_Front_Mid_Sensor;
+    private Sensor Front_Front_Right_Sensor;
+    private Sensor Left_Front_Left_Sensor;
+    private Sensor Left_Bottom_Left_Sensor;
+    private Sensor Right_Bottom_Right_Sensor; //Long range
+
+
+
+    public Robot(int startX, int startY, ORIENTATION startOrientation, boolean isReal){
         mainController= Controller.getInstance();
 
+        isRealBot=isReal;
         robotPosition[0] = startX;
         robotPosition[1] = startY;
         robotOrientation = startOrientation;
+
+        Front_Front_Left_Sensor=new Sensor(NORTH, ROBOT_CONST.SHORT_RANGE_MAX_DISTANCE, ROBOT_CONST.SHORT_RANGE_MIN_DISTANCE, -1, -1, this);
+        Front_Front_Mid_Sensor=new Sensor(NORTH, ROBOT_CONST.SHORT_RANGE_MAX_DISTANCE, ROBOT_CONST.SHORT_RANGE_MIN_DISTANCE, 0, -1, this);
+        Front_Front_Right_Sensor=new Sensor(NORTH, ROBOT_CONST.SHORT_RANGE_MAX_DISTANCE, ROBOT_CONST.SHORT_RANGE_MIN_DISTANCE, 1, -1, this);
+        Left_Front_Left_Sensor=new Sensor(WEST, ROBOT_CONST.SHORT_RANGE_MAX_DISTANCE, ROBOT_CONST.SHORT_RANGE_MIN_DISTANCE, -1, -1, this);
+        Left_Bottom_Left_Sensor=new Sensor(WEST, ROBOT_CONST.SHORT_RANGE_MAX_DISTANCE, ROBOT_CONST.SHORT_RANGE_MIN_DISTANCE, -1, 1, this);
+        Right_Bottom_Right_Sensor=new Sensor(EAST, ROBOT_CONST.LONG_RANGE_MAX_DISTANCE, ROBOT_CONST.LONG_RANGE_MIN_DISTANCE, 1, 1, this);
     }
 
-    public Robot(){}
 
     public int[] getRobotPosition(){
-        return robotPosition;
+        return new int[]{robotPosition[0], robotPosition[1]};
     }
+
+    private void updateSensorDirLeft(){
+        Front_Front_Left_Sensor.robotTurnLeft();
+        Front_Front_Mid_Sensor.robotTurnLeft();
+        Front_Front_Right_Sensor.robotTurnLeft();
+        Left_Bottom_Left_Sensor.robotTurnLeft();
+        Left_Front_Left_Sensor.robotTurnLeft();
+        Right_Bottom_Right_Sensor.robotTurnLeft();
+    }
+
+    private void updateSensorDirRight(){
+        Front_Front_Left_Sensor.robotTurnRight();
+        Front_Front_Mid_Sensor.robotTurnRight();
+        Front_Front_Right_Sensor.robotTurnRight();
+        Left_Bottom_Left_Sensor.robotTurnRight();
+        Left_Front_Left_Sensor.robotTurnRight();
+        Right_Bottom_Right_Sensor.robotTurnRight();
+    }
+
 
     public ORIENTATION getRobotOrientation(){
         return robotOrientation;
     }
 
     public void Turn_Right(){
+        System.out.println("turning right");
         switch (robotOrientation){
             case NORTH:
                 robotOrientation= EAST;
@@ -43,6 +84,7 @@ public class Robot {
                 robotOrientation= NORTH;
                 break;
         }
+        updateSensorDirRight();
     }
 
     public void Turn_Left(){
@@ -59,8 +101,8 @@ public class Robot {
             case EAST:
                 robotOrientation= NORTH;
                 break;
-
         }
+        updateSensorDirLeft();
     }
 
     public void Move_Forward(){
@@ -112,15 +154,32 @@ public class Robot {
     }
 
     public void SenseFront() {
-        int forwardSensorDistance = 3; //This is assumed, confirm with other later
-        mainController.checkRobotFrontSensor();
+        if(isRealBot){
+            Front_Front_Left_Sensor.senseReal();
+            Front_Front_Mid_Sensor.senseReal();
+            Front_Front_Right_Sensor.senseReal();
+        }else{
+            Front_Front_Left_Sensor.sense();
+            Front_Front_Mid_Sensor.sense();
+            Front_Front_Right_Sensor.sense();
+        }
     }
 
     public void SenseLeft(){
-        mainController.checkRobotLeftSensor();
+        if(isRealBot){
+            Left_Front_Left_Sensor.senseReal();
+            Left_Bottom_Left_Sensor.senseReal();
+        }else{
+            Left_Front_Left_Sensor.sense();
+            Left_Bottom_Left_Sensor.sense();
+        }
     }
 
     public void SenseRight(){
-        mainController.checkRobotRightSensor();
+        if(isRealBot){
+            Right_Bottom_Right_Sensor.senseReal();
+        }else{
+            Right_Bottom_Right_Sensor.sense();
+        }
     }
 }

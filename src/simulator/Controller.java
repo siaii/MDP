@@ -6,6 +6,7 @@ import map.ACCESS;
 import map.MAP_CONST;
 import map.Map;
 import map.True_Map;
+import robot.Camera;
 import robot.ORIENTATION;
 import robot.Robot;
 
@@ -31,7 +32,8 @@ public class Controller {
     private Robot virtualRobot;
     private Map arena;
     private True_Map trueArena;
-    private static final boolean isRealRun=false;
+    private Camera camera;
+    private static final boolean isRealBot=false;
     private boolean isArenaExplored=false;
 
     public static Controller getInstance(){
@@ -53,13 +55,16 @@ public class Controller {
         return arena;
     }
 
+    public True_Map getTrueArena(){ return trueArena;}
+
     public void Initialize(){
         ui = new UIController();
         arena = new Map();
         trueArena = new True_Map();
-        virtualRobot = new Robot(MAP_CONST.ROBOT_START_ZONE_CENTER_X,MAP_CONST.ROBOT_START_ZONE_CENTER_Y, NORTH);
+        virtualRobot = new Robot(MAP_CONST.ROBOT_START_ZONE_CENTER_X,MAP_CONST.ROBOT_START_ZONE_CENTER_Y, NORTH, isRealBot);
         exploreAlgo = new ExplorationAlgorithm();
         fastestPathAlgo = new FastestPathAlgorithm();
+        camera = new Camera();
     }
 
     public void run() throws InterruptedException {
@@ -72,15 +77,21 @@ public class Controller {
 
     //Default move forward 1 step
     public void robotMoveForward() throws InterruptedException {
+        if(isRealBot){
+            //Send command to rpi
+        }
         robotMoveForward(1);
     }
 
     //Check if the "steps" steps in front is accessible or not (should be in checkRobotFront?)
     public void robotMoveForward(int steps) throws InterruptedException {
         if(checkRobotFront()){
+            if(isRealBot){
+                //Send command to rpi
+            }
             virtualRobot.Move_Forward(steps);
-            checkRobotRightSensor();
-            checkRobotLeftSensor();
+            virtualRobot.SenseLeft();
+            virtualRobot.SenseRight();
         }else{
             System.out.println("robot bumped to wall");
         }
@@ -88,6 +99,7 @@ public class Controller {
 
     public void startExploration() throws InterruptedException {
         exploreAlgo.setMode(ui.getExploreMode());
+        // virtualRobot.SenseFront();
         exploreAlgo.exploreArena();
         isArenaExplored=true;
     }
@@ -126,27 +138,85 @@ public class Controller {
 
 
     public void robotTurnRight() throws InterruptedException {
+        if(isRealBot){
+            //Send command to rpi
+        }
         virtualRobot.Turn_Right();
     }
 
     public void robotTurnLeft() throws InterruptedException {
+        if(isRealBot){
+            //Send command to rpi
+        }
         virtualRobot.Turn_Left();
     }
 
-    private void updateVirtualArena(int coordX, int coordY, boolean isWall){
+    public void updateVirtualArena(int coordX, int coordY, boolean isWall){
+        if(arena.GetExplored(coordX, coordY)) return;
+
         arena.SetExplored(coordX, coordY);
         if(isWall){
             arena.SetTrueWallAt(coordX, coordY);
         }
     }
 
+    public int[] checkTrueWall(int dist){
+        int[] robotPos = virtualRobot.getRobotPosition();
+        switch(virtualRobot.getRobotOrientation()){
+            case NORTH:
+                if(checkRobotFrontUnexplored(robotPos[0], robotPos[1])){
+                    virtualRobot.SenseFront();
+                }
+                for(int i=2; i<dist; i++){
+                    if(arena.GetTrueWallAt(robotPos[0], robotPos[1]-i)){
+                        return new int[]{robotPos[0], robotPos[1]-i};
+                    }
+                }
+                return null;
+            case SOUTH:
+                if(checkRobotFrontUnexplored(robotPos[0], robotPos[1])){
+                    virtualRobot.SenseFront();
+                }
+                for(int i=2; i<dist; i++){
+                    if(arena.GetTrueWallAt(robotPos[0], robotPos[1]+i)){
+                        return new int[]{robotPos[0], robotPos[1]+1};
+                    }
+                }
+                return null;
+
+            case EAST:
+                if(checkRobotFrontUnexplored(robotPos[0], robotPos[1])){
+                    virtualRobot.SenseFront();
+                }
+                for(int i=2; i<dist; i++){
+                    if(arena.GetTrueWallAt(robotPos[0]+i, robotPos[1])){
+                        return new int[]{robotPos[0]+i, robotPos[1]};
+                    }
+                }
+                    return null;
+
+            case WEST:
+                if(checkRobotFrontUnexplored(robotPos[0], robotPos[1])){
+                    virtualRobot.SenseFront();
+                }
+                for(int i=2; i<dist; i++){
+                    if(arena.GetTrueWallAt(robotPos[0]-i, robotPos[1])){
+                        return new int[]{robotPos[0]-i, robotPos[1]};
+                    }
+                }
+                    return null;
+
+            default:
+                return null;
+        }
+    }
 
     public boolean checkRobotFront(){
         int[] robotPos = virtualRobot.getRobotPosition();
         switch(virtualRobot.getRobotOrientation()){
             case NORTH:
                 if(checkRobotFrontUnexplored(robotPos[0], robotPos[1])){
-                    checkRobotFrontSensor();
+                    virtualRobot.SenseFront();
                 }
                 if(arena.CheckIsAccessible(robotPos[0], robotPos[1]-1)== ACCESS.YES){
                     return true;
@@ -155,7 +225,7 @@ public class Controller {
                 }
             case SOUTH:
                 if(checkRobotFrontUnexplored(robotPos[0], robotPos[1])){
-                    checkRobotFrontSensor();
+                    virtualRobot.SenseFront();
                 }
                 if(arena.CheckIsAccessible(robotPos[0], robotPos[1]+1)==ACCESS.YES){
                     return true;
@@ -164,7 +234,7 @@ public class Controller {
                 }
             case EAST:
                 if(checkRobotFrontUnexplored(robotPos[0], robotPos[1])){
-                    checkRobotFrontSensor();
+                    virtualRobot.SenseFront();
                 }
                 if(arena.CheckIsAccessible(robotPos[0]+1, robotPos[1])==ACCESS.YES){
                     return true;
@@ -173,7 +243,7 @@ public class Controller {
                 }
             case WEST:
                 if(checkRobotFrontUnexplored(robotPos[0], robotPos[1])){
-                    checkRobotFrontSensor();
+                    virtualRobot.SenseFront();
                 }
                 if(arena.CheckIsAccessible(robotPos[0]-1, robotPos[1])==ACCESS.YES){
                     return true;
@@ -251,225 +321,6 @@ public class Controller {
         }
     }
 
-    //Sensors maybe can be moved to a seperate Sensor class when integrated to real robot
-    public void checkRobotFrontSensor(){
-        int[] robotPos = virtualRobot.getRobotPosition();
-        int robotX = robotPos[0];
-        int robotY = robotPos[1];
-        switch (virtualRobot.getRobotOrientation()){
-            case NORTH:
-                for(int i=-1; i<=1; ++i){
-                    for(int j=2; j<=4; j++){
-                        //xCoords = from robotCenter-1 to robotCenter+1
-                        //yCoords = from robotCenter-2 to robotCenter-4 (to upper side, index towards 0)
-                        if(robotX+i>=0 && robotX+i<MAP_CONST.MAP_GRID_WIDTH && robotY-j >=0 && robotY-j<MAP_CONST.MAP_GRID_HEIGHT){
-                            boolean isWall = trueArena.IsWallAtCoords(robotX+i, robotY-j);
-                            updateVirtualArena(robotX+i, robotY-j, isWall);
-                            if(isWall){
-                                break;
-                            }
-                        }
-                    }
-                }
-
-                break;
-
-            case SOUTH:
-                for(int i=-1; i<=1; ++i){
-                    for(int j=2; j<=4; j++){
-                        //xCoords = from robotCenter-1 to robotCenter+1
-                        //yCoords = from robotCenter+2 to robotCenter+4 (to lower side, index towards map height-1)
-                        if(robotX+i>=0 && robotX+i< MAP_CONST.MAP_GRID_WIDTH && robotY+j >=0 && robotY+j<MAP_CONST.MAP_GRID_HEIGHT) {
-                            boolean isWall = trueArena.IsWallAtCoords(robotX + i, robotY + j);
-                            updateVirtualArena(robotX + i, robotY + j, isWall);
-                            if(isWall){
-                                break;
-                            }
-                        }
-                    }
-                }
-
-                break;
-
-            case EAST:
-                for(int i=-1; i<=1; ++i){
-                    for(int j=2; j<=4; j++){
-                        //xCoords = from robotCenter+2 to robotCenter+4 (to the right)
-                        //yCoords = from robotCenter-1 to robotCenter+1
-                        if(robotX+j>=0 && robotX+j<MAP_CONST.MAP_GRID_WIDTH && robotY+i >=0 && robotY+i<MAP_CONST.MAP_GRID_HEIGHT) {
-                            boolean isWall = trueArena.IsWallAtCoords(robotX + j, robotY + i);
-                            updateVirtualArena(robotX + j, robotY + i, isWall);
-                            if(isWall){
-                                break;
-                            }
-                        }
-                    }
-                }
-                break;
-
-            case WEST:
-                for(int i=-1; i<=1; ++i){
-                    for(int j=2; j<=4; j++){
-                        //xCoords = from robotCenter-2 to robotCenter-4 (to the left)
-                        //yCoords = from robotCenter-1 to robotCenter+1
-                        if(robotX-j>=0 && robotX-j<MAP_CONST.MAP_GRID_WIDTH && robotY+i >=0 && robotY+i<MAP_CONST.MAP_GRID_HEIGHT) {
-                            boolean isWall = trueArena.IsWallAtCoords(robotX - j, robotY + i);
-                            updateVirtualArena(robotX - j, robotY + i, isWall);
-                            if(isWall){
-                                break;
-                            }
-                        }
-                    }
-                }
-                break;
-        }
-    }
-
-    public void checkRobotRightSensor(){
-        int[] robotPos = virtualRobot.getRobotPosition();
-        int robotX = robotPos[0];
-        int robotY = robotPos[1];
-        switch (virtualRobot.getRobotOrientation()){
-            case NORTH:
-                for(int i=-1; i<=1; ++i){
-                    for(int j=2; j<=4; j++){
-                        //xCoords = from robotCenter-1 to robotCenter+1
-                        //yCoords = from robotCenter-2 to robotCenter-4 (to upper side, index towards 0)
-                        if(robotX+j>=0 && robotX+j<MAP_CONST.MAP_GRID_WIDTH && robotY+i >=0 && robotY+i<MAP_CONST.MAP_GRID_HEIGHT){
-                            boolean isWall = trueArena.IsWallAtCoords(robotX+j, robotY+i);
-                            updateVirtualArena(robotX+j, robotY+i, isWall);
-                            if(isWall){
-                                break;
-                            }
-                        }
-                    }
-                }
-
-                break;
-
-            case SOUTH:
-                for(int i=-1; i<=1; ++i){
-                    for(int j=2; j<=4; j++){
-                        //xCoords = from robotCenter-1 to robotCenter+1
-                        //yCoords = from robotCenter+2 to robotCenter+4 (to lower side, index towards map height-1)
-                        if(robotX-j>=0 && robotX-j<MAP_CONST.MAP_GRID_WIDTH && robotY+i >=0 && robotY+i<MAP_CONST.MAP_GRID_HEIGHT) {
-                            boolean isWall = trueArena.IsWallAtCoords(robotX - j, robotY + i);
-                            updateVirtualArena(robotX - j, robotY + i, isWall);
-                            if(isWall){
-                                break;
-                            }
-                        }
-                    }
-                }
-
-                break;
-
-            case EAST:
-                for(int i=-1; i<=1; ++i){
-                    for(int j=2; j<=4; j++){
-                        //xCoords = from robotCenter+2 to robotCenter+4 (to the right)
-                        //yCoords = from robotCenter-1 to robotCenter+1
-                        if(robotX+i>=0 && robotX+i<MAP_CONST.MAP_GRID_WIDTH && robotY+j >=0 && robotY+j<MAP_CONST.MAP_GRID_HEIGHT) {
-                            boolean isWall = trueArena.IsWallAtCoords(robotX + i, robotY + j);
-                            updateVirtualArena(robotX + i, robotY + j, isWall);
-                            if (isWall){
-                                break;
-                            }
-                        }
-                    }
-                }
-                break;
-
-            case WEST:
-                for(int i=-1; i<=1; ++i){
-                    for(int j=2; j<=4; j++){
-                        //xCoords = from robotCenter-2 to robotCenter-4 (to the left)
-                        //yCoords = from robotCenter-1 to robotCenter+1
-                        if(robotX+i>=0 && robotX+i<MAP_CONST.MAP_GRID_WIDTH && robotY-j >=0 && robotY-j<MAP_CONST.MAP_GRID_HEIGHT) {
-                            boolean isWall = trueArena.IsWallAtCoords(robotX + i, robotY - j);
-                            updateVirtualArena(robotX + i, robotY - j, isWall);
-                            if(isWall){
-                                break;
-                            }
-                        }
-                    }
-                }
-                break;
-        }
-    }
-
-    public void checkRobotLeftSensor(){
-        int[] robotPos = virtualRobot.getRobotPosition();
-        int robotX = robotPos[0];
-        int robotY = robotPos[1];
-        switch (virtualRobot.getRobotOrientation()){
-            case NORTH:
-                for(int i=-1; i<=1; ++i){
-                    for(int j=2; j<=4; j++){
-                        //xCoords = from robotCenter-1 to robotCenter+1
-                        //yCoords = from robotCenter-2 to robotCenter-4 (to upper side, index towards 0)
-                        if(robotX-j>=0 && robotX-j<MAP_CONST.MAP_GRID_WIDTH && robotY+i >=0 && robotY+i<MAP_CONST.MAP_GRID_HEIGHT) {
-                            boolean isWall = trueArena.IsWallAtCoords(robotX - j, robotY + i);
-                            updateVirtualArena(robotX - j, robotY + i, isWall);
-                            if(isWall){
-                                break;
-                            }
-                        }
-                    }
-                }
-
-                break;
-
-            case SOUTH:
-                for(int i=-1; i<=1; ++i){
-                    for(int j=2; j<=4; j++){
-                        //xCoords = from robotCenter-1 to robotCenter+1
-                        //yCoords = from robotCenter+2 to robotCenter+4 (to lower side, index towards map height-1)
-                        if(robotX+j>=0 && robotX+j<MAP_CONST.MAP_GRID_WIDTH && robotY+i >=0 && robotY+i<MAP_CONST.MAP_GRID_HEIGHT) {
-                            boolean isWall = trueArena.IsWallAtCoords(robotX + j, robotY + i);
-                            updateVirtualArena(robotX + j, robotY + i, isWall);
-                            if (isWall){
-                                break;
-                            }
-                        }
-                    }
-                }
-
-                break;
-
-            case EAST:
-                for(int i=-1; i<=1; ++i){
-                    for(int j=2; j<=4; j++){
-                        //xCoords = from robotCenter+2 to robotCenter+4 (to the right)
-                        //yCoords = from robotCenter-1 to robotCenter+1
-                        if(robotX+i>=0 && robotX+i<MAP_CONST.MAP_GRID_WIDTH && robotY-j >=0 && robotY-j<MAP_CONST.MAP_GRID_HEIGHT) {
-                            boolean isWall = trueArena.IsWallAtCoords(robotX + i, robotY - j);
-                            updateVirtualArena(robotX + i, robotY - j, isWall);
-                            if(isWall){
-                                break;
-                            }
-                        }
-                    }
-                }
-                break;
-
-            case WEST:
-                for(int i=-1; i<=1; ++i){
-                    for(int j=2; j<=4; j++){
-                        //xCoords = from robotCenter-2 to robotCenter-4 (to the left)
-                        //yCoords = from robotCenter-1 to robotCenter+1
-                        if(robotX+i>=0 && robotX+i<MAP_CONST.MAP_GRID_WIDTH && robotY+j >=0 && robotY+j<MAP_CONST.MAP_GRID_HEIGHT) {
-                            boolean isWall = trueArena.IsWallAtCoords(robotX + i, robotY + j);
-                            updateVirtualArena(robotX + i, robotY + j, isWall);
-                            if (isWall){
-                                break;
-                            }
-                        }
-                    }
-                }
-                break;
-        }
-    }
 
     public boolean checkIsAccessible(int posX, int posY){
         if(arena.CheckIsAccessible(posX,posY)==ACCESS.YES){
@@ -544,5 +395,10 @@ public class Controller {
     public int getRobotMoveSpeed(){
         int stepPerSec = ui.getStepsPerSec();
         return 1000/stepPerSec;
+    }
+
+    public void TakePicture(){
+        System.out.println("Taking picture");
+        camera.TakePicture();
     }
 }
