@@ -69,7 +69,6 @@ public class Robot {
     }
 
     public void Turn_Right(){
-        System.out.println("turning right");
         switch (robotOrientation){
             case NORTH:
                 robotOrientation= EAST;
@@ -85,6 +84,7 @@ public class Robot {
                 break;
         }
         updateSensorDirRight();
+        mainController.TakePicture();
     }
 
     public void Turn_Left(){
@@ -103,6 +103,7 @@ public class Robot {
                 break;
         }
         updateSensorDirLeft();
+        mainController.TakePicture();
     }
 
     public void Move_Forward(){
@@ -153,33 +154,56 @@ public class Robot {
         }
     }
 
-    public void SenseFront() {
-        if(isRealBot){
-            Front_Front_Left_Sensor.senseReal();
-            Front_Front_Mid_Sensor.senseReal();
-            Front_Front_Right_Sensor.senseReal();
+    /*
+        sensorResult[0] = front left
+        sensorResult[1] = front mid
+        sensorResult[2] = front right
+        sensorResult[3] = left front
+        sensorResult[4] = left bottom
+        sensorResult[5] = right bottom
+     */
+    public void SenseAll(){
+        int[] sensorResult = new int[6];
+        if(!isRealBot){
+            sensorResult[0]=Front_Front_Left_Sensor.sense();
+            sensorResult[1]=Front_Front_Mid_Sensor.sense();
+            sensorResult[2]=Front_Front_Right_Sensor.sense();
+            sensorResult[3]=Left_Front_Left_Sensor.sense();
+            sensorResult[4]=Left_Bottom_Left_Sensor.sense();
+            sensorResult[5]=Right_Bottom_Right_Sensor.sense();
         }else{
-            Front_Front_Left_Sensor.sense();
-            Front_Front_Mid_Sensor.sense();
-            Front_Front_Right_Sensor.sense();
+            //get real sensor data here
         }
+
+        Front_Front_Left_Sensor.processSensorResult(sensorResult[0]);
+        Front_Front_Mid_Sensor.processSensorResult(sensorResult[1]);
+        Front_Front_Right_Sensor.processSensorResult(sensorResult[2]);
+        Left_Front_Left_Sensor.processSensorResult(sensorResult[3]);
+        Left_Bottom_Left_Sensor.processSensorResult(sensorResult[4]);
+        Right_Bottom_Right_Sensor.processSensorResult(sensorResult[5]);
+
+        String mdf = mainController.getMdfString();
+        //Convert from (0,0) on top left to bottom left to accommodate for android
+        String robotPosString = robotPosition[0] + ","+ (19-robotPosition[1]);
+        String robotDirection = convertDirToInt();
+        String msg = mdf +","+robotPosString+","+robotDirection;
+        //Send mdf string to android
+        System.out.println(msg);
     }
 
-    public void SenseLeft(){
-        if(isRealBot){
-            Left_Front_Left_Sensor.senseReal();
-            Left_Bottom_Left_Sensor.senseReal();
-        }else{
-            Left_Front_Left_Sensor.sense();
-            Left_Bottom_Left_Sensor.sense();
+    //Number to change later
+    private String convertDirToInt(){
+        switch (robotOrientation){
+            case NORTH:
+                return "0";
+            case EAST:
+                return "1";
+            case SOUTH:
+                return "2";
+            case WEST:
+                return "3";
         }
+        return "0";
     }
 
-    public void SenseRight(){
-        if(isRealBot){
-            Right_Bottom_Right_Sensor.senseReal();
-        }else{
-            Right_Bottom_Right_Sensor.sense();
-        }
-    }
 }

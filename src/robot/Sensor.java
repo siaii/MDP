@@ -89,41 +89,68 @@ public class Sensor {
         return sensorPos;
     }
 
-    public void sense(){
+    public int sense(){
         switch (sensorDirection){
             case NORTH:
-                getSensorResult(1, -1);
-                break;
+                return getSensorResult(1, -1);
             case EAST:
-                getSensorResult(0, 1);
-                break;
+                return getSensorResult(0, 1);
             case SOUTH:
-                getSensorResult(1, 1);
-                break;
+                return getSensorResult(1, 1);
             case WEST:
-                getSensorResult(0, -1);
-                break;
+                return getSensorResult(0, -1);
+            default:
+                return -1;
         }
     }
 
-
-    public void senseReal(){
-        switch (sensorDirection){
-
-        }
-    }
 
     //0 for x axis, 1 for y axis, +1 for positive dir, -1 for negative dir
-    private void getSensorResult(int axis, int dir){
+    private int getSensorResult(int axis, int dir){
         int[] sensorPos = calculateSensorPos();
         int[] checkCoords = new int[]{sensorPos[0], sensorPos[1]};
         for(int i=minDistance; i<maxDistance; ++i){
             checkCoords[axis]+=dir;
             if(checkValidCoords(checkCoords[0], checkCoords[1])){
                 boolean isWall = realMap.IsWallAtCoords(checkCoords[0], checkCoords[1]);
-                mController.updateVirtualArena(checkCoords[0], checkCoords[1], isWall);
-                UIController.getInstance().repaint();
+                //mController.updateVirtualArena(checkCoords[0], checkCoords[1], isWall);
+                //UIController.getInstance().repaint();
                 if (isWall){
+                    return i;
+                }
+            }
+        }
+
+        return -1;
+    }
+
+    public void processSensorResult(int res){
+        switch (sensorDirection){
+            case NORTH:
+                 processSensorResult(1, -1, res);
+                 break;
+            case EAST:
+                 processSensorResult(0, 1, res);
+                 break;
+            case SOUTH:
+                 processSensorResult(1, 1, res);
+                 break;
+            case WEST:
+                 processSensorResult(0, -1, res);
+                 break;
+        }
+    }
+
+    private void processSensorResult(int axis, int dir, int res){
+        int[] sensorPos = calculateSensorPos();
+        int[] checkCoords = new int[]{sensorPos[0], sensorPos[1]};
+        for(int i=minDistance; i<maxDistance; ++i){
+            checkCoords[axis]+=dir;
+            if(checkValidCoords(checkCoords[0], checkCoords[1])){
+                if(i!=res){
+                    mController.updateVirtualArena(checkCoords[0], checkCoords[1], false);
+                }else{
+                    mController.updateVirtualArena(checkCoords[0], checkCoords[1], true);
                     break;
                 }
             }

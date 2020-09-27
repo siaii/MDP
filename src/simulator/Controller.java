@@ -90,8 +90,7 @@ public class Controller {
                 //Send command to rpi
             }
             virtualRobot.Move_Forward(steps);
-            virtualRobot.SenseLeft();
-            virtualRobot.SenseRight();
+            virtualRobot.SenseAll();
         }else{
             System.out.println("robot bumped to wall");
         }
@@ -165,7 +164,7 @@ public class Controller {
         switch(virtualRobot.getRobotOrientation()){
             case NORTH:
                 if(checkRobotFrontUnexplored(robotPos[0], robotPos[1])){
-                    virtualRobot.SenseFront();
+                    virtualRobot.SenseAll();
                 }
                 for(int i=2; i<dist; i++){
                     if(arena.GetTrueWallAt(robotPos[0], robotPos[1]-i)){
@@ -175,7 +174,7 @@ public class Controller {
                 return null;
             case SOUTH:
                 if(checkRobotFrontUnexplored(robotPos[0], robotPos[1])){
-                    virtualRobot.SenseFront();
+                    virtualRobot.SenseAll();
                 }
                 for(int i=2; i<dist; i++){
                     if(arena.GetTrueWallAt(robotPos[0], robotPos[1]+i)){
@@ -186,7 +185,7 @@ public class Controller {
 
             case EAST:
                 if(checkRobotFrontUnexplored(robotPos[0], robotPos[1])){
-                    virtualRobot.SenseFront();
+                    virtualRobot.SenseAll();
                 }
                 for(int i=2; i<dist; i++){
                     if(arena.GetTrueWallAt(robotPos[0]+i, robotPos[1])){
@@ -197,7 +196,7 @@ public class Controller {
 
             case WEST:
                 if(checkRobotFrontUnexplored(robotPos[0], robotPos[1])){
-                    virtualRobot.SenseFront();
+                    virtualRobot.SenseAll();
                 }
                 for(int i=2; i<dist; i++){
                     if(arena.GetTrueWallAt(robotPos[0]-i, robotPos[1])){
@@ -216,7 +215,7 @@ public class Controller {
         switch(virtualRobot.getRobotOrientation()){
             case NORTH:
                 if(checkRobotFrontUnexplored(robotPos[0], robotPos[1])){
-                    virtualRobot.SenseFront();
+                    virtualRobot.SenseAll();
                 }
                 if(arena.CheckIsAccessible(robotPos[0], robotPos[1]-1)== ACCESS.YES){
                     return true;
@@ -225,7 +224,7 @@ public class Controller {
                 }
             case SOUTH:
                 if(checkRobotFrontUnexplored(robotPos[0], robotPos[1])){
-                    virtualRobot.SenseFront();
+                    virtualRobot.SenseAll();
                 }
                 if(arena.CheckIsAccessible(robotPos[0], robotPos[1]+1)==ACCESS.YES){
                     return true;
@@ -234,7 +233,7 @@ public class Controller {
                 }
             case EAST:
                 if(checkRobotFrontUnexplored(robotPos[0], robotPos[1])){
-                    virtualRobot.SenseFront();
+                    virtualRobot.SenseAll();
                 }
                 if(arena.CheckIsAccessible(robotPos[0]+1, robotPos[1])==ACCESS.YES){
                     return true;
@@ -243,7 +242,7 @@ public class Controller {
                 }
             case WEST:
                 if(checkRobotFrontUnexplored(robotPos[0], robotPos[1])){
-                    virtualRobot.SenseFront();
+                    virtualRobot.SenseAll();
                 }
                 if(arena.CheckIsAccessible(robotPos[0]-1, robotPos[1])==ACCESS.YES){
                     return true;
@@ -400,5 +399,12 @@ public class Controller {
     public void TakePicture(){
         System.out.println("Taking picture");
         camera.TakePicture();
+    }
+
+    public String getMdfString(){
+        String part1 = arena.GetMdfStringExplored();
+        String part2 = arena.GetMdfStringIsWall();
+
+        return part1+","+part2;
     }
 }
