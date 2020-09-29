@@ -70,13 +70,16 @@ public class Controller {
 
     public void run() throws InterruptedException {
         ui.CreateUI();
-        while (!isRealBot){
-            String cmd = pcClient.receivePacket();
-            if (cmd == "ex") startExploration();
-            else if (cmd.substring(0,2) == "pf"){
-                int x = Integer.parseInt(cmd.split(",")[2]);
-                int y = 19 - Integer.parseInt(cmd.split(",")[3]);
-                runFastestPath(x,y);
+        if (isRealBot) {
+            String cmd;
+            while (true){
+                cmd = pcClient.receivePacket();
+                if (cmd == "ex") startExploration();
+                else if (cmd.substring(0,2) == "pf"){
+                    int x = Integer.parseInt(cmd.split(",")[2]);
+                    int y = 19 - Integer.parseInt(cmd.split(",")[3]);
+                    runFastestPath(x,y);
+                }
             }
         }
     }
