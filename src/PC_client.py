@@ -26,7 +26,10 @@ class Client_Algorithm:
 
 client = Client_Algorithm()
 a = 0
+# while 1:
+	# a = a + 1
+	# client.write(str(a))
+	# time.sleep(5)
+client.write("1")
 while 1:
-	a = a + 1
-	client.write(str(a))
-	time.sleep(5)
+	client.read()

@@ -12,6 +12,8 @@ import robot.Robot;
 
 import java.util.ArrayList;
 
+import org.graalvm.compiler.debug.MethodFilter;
+
 import static robot.ORIENTATION.*;
 
 //TODO
@@ -36,6 +38,9 @@ public class Controller {
     private static final boolean isRealBot=false;
     private boolean isArenaExplored=false;
 
+    private PCClient pcClient;
+    Boolean connect = false;
+
     public static Controller getInstance(){
         if(_instance==null){
             _instance = new Controller();
@@ -58,10 +63,13 @@ public class Controller {
     public True_Map getTrueArena(){ return trueArena;}
 
     public void Initialize(){
+        pcClient = new PCClient(CONFIG.SERVER_HOST, CONFIG.SERVER_PORT);
+        connect = pcClient.connectToDevice();
+
         ui = new UIController();
         arena = new Map();
         trueArena = new True_Map();
-        virtualRobot = new Robot(MAP_CONST.ROBOT_START_ZONE_CENTER_X,MAP_CONST.ROBOT_START_ZONE_CENTER_Y, NORTH, isRealBot);
+        virtualRobot = new Robot(MAP_CONST.ROBOT_START_ZONE_CENTER_X,MAP_CONST.ROBOT_START_ZONE_CENTER_Y, NORTH, isRealBot, pcClient);
         exploreAlgo = new ExplorationAlgorithm();
         fastestPathAlgo = new FastestPathAlgorithm();
         camera = new Camera();
@@ -86,8 +94,10 @@ public class Controller {
     //Check if the "steps" steps in front is accessible or not (should be in checkRobotFront?)
     public void robotMoveForward(int steps) throws InterruptedException {
         if(checkRobotFront()){
+            String mdf = virtualRobot.mdfString();
             if(isRealBot){
                 //Send command to rpi
+                pcClient.sendPacket("1," + mdf);
             }
             virtualRobot.Move_Forward(steps);
             virtualRobot.SenseAll();
@@ -137,15 +147,19 @@ public class Controller {
 
 
     public void robotTurnRight() throws InterruptedException {
+        String mdf = virtualRobot.mdfString();
         if(isRealBot){
             //Send command to rpi
+            pcClient.sendPacket("D," + mdf);
         }
         virtualRobot.Turn_Right();
     }
 
     public void robotTurnLeft() throws InterruptedException {
+        String mdf = virtualRobot.mdfString();
         if(isRealBot){
             //Send command to rpi
+            pcClient.sendPacket("A," + mdf);
         }
         virtualRobot.Turn_Left();
     }

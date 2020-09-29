@@ -1,6 +1,9 @@
 package robot;
 
+import java.util.Arrays;
+
 import simulator.Controller;
+import simulator.PCClient;
 
 import static robot.ORIENTATION.*;
 
@@ -10,6 +13,7 @@ public class Robot {
     private ORIENTATION robotOrientation;
     private int[] robotPosition = new int[2];
     private boolean isRealBot;
+    private PCClient pcClient;
 
     /*
         Sensor format: Direction_Row_Col_Sensor
@@ -24,8 +28,9 @@ public class Robot {
 
 
 
-    public Robot(int startX, int startY, ORIENTATION startOrientation, boolean isReal){
+    public Robot(int startX, int startY, ORIENTATION startOrientation, boolean isReal, PCClient pcClient){
         mainController= Controller.getInstance();
+        this.pcClient = pcClient;
 
         isRealBot=isReal;
         robotPosition[0] = startX;
@@ -162,7 +167,7 @@ public class Robot {
         sensorResult[4] = left bottom
         sensorResult[5] = right bottom
      */
-    public void SenseAll(){
+    public String SenseAll(){
         int[] sensorResult = new int[6];
         if(!isRealBot){
             sensorResult[0]=Front_Front_Left_Sensor.sense();
@@ -173,6 +178,8 @@ public class Robot {
             sensorResult[5]=Right_Bottom_Right_Sensor.sense();
         }else{
             //get real sensor data here
+            String[] sensorData = pcClient.receivePacket().split(",");
+            sensorResult = Arrays.asList(sensorData).stream().mapToInt(Integer::parseInt).toArray();
         }
 
         Front_Front_Left_Sensor.processSensorResult(sensorResult[0]);
@@ -182,6 +189,9 @@ public class Robot {
         Left_Bottom_Left_Sensor.processSensorResult(sensorResult[4]);
         Right_Bottom_Right_Sensor.processSensorResult(sensorResult[5]);
 
+    }
+
+    public String mdfString() {
         String mdf = mainController.getMdfString();
         //Convert from (0,0) on top left to bottom left to accommodate for android
         String robotPosString = robotPosition[0] + ","+ (19-robotPosition[1]);
@@ -189,6 +199,8 @@ public class Robot {
         String msg = mdf +","+robotPosString+","+robotDirection;
         //Send mdf string to android
         System.out.println(msg);
+
+        return msg;
     }
 
     //Number to change later
