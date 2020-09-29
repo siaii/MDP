@@ -167,7 +167,7 @@ public class Robot {
         sensorResult[4] = left bottom
         sensorResult[5] = right bottom
      */
-    public String SenseAll(){
+    public void SenseAll(){
         int[] sensorResult = new int[6];
         if(!isRealBot){
             sensorResult[0]=Front_Front_Left_Sensor.sense();
