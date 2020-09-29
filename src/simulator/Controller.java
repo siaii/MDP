@@ -12,8 +12,6 @@ import robot.Robot;
 
 import java.util.ArrayList;
 
-import org.graalvm.compiler.debug.MethodFilter;
-
 import static robot.ORIENTATION.*;
 
 //TODO
@@ -355,7 +353,6 @@ public class Controller {
 
     //Reset robot orientation to north
     public void resetRobotOrientation() throws InterruptedException {
-        System.out.println(getRobotOrientation());
         switch (getRobotOrientation()){
             case NORTH:
                 break;
@@ -368,7 +365,6 @@ public class Controller {
                 robotTurnLeft();
                 break;
             case WEST:
-                System.out.println("turning right");
                 robotTurnRight();
                 break;
         }
