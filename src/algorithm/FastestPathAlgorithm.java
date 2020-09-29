@@ -391,7 +391,9 @@ public class FastestPathAlgorithm {
                         break;
                 }
                 publish();
-                Thread.sleep(stepCD);
+                if(!mainController.isRealBot){
+                    Thread.sleep(stepCD);
+                }
             }
             System.out.println("Reached target destination");
             return null;
@@ -438,6 +440,12 @@ public class FastestPathAlgorithm {
                             e.printStackTrace();
                         }
                     }
+                }
+            }else{
+                try {
+                    runFastestPath(MAP_CONST.FINISH_ZONE_CENTER_X, MAP_CONST.FINISH_ZONE_CENTER_Y);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
                 }
             }
         }

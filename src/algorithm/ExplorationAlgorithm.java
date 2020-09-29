@@ -76,8 +76,9 @@ public class ExplorationAlgorithm {
                 }
 
                 //Sleep is for simulator only
-
-                Thread.sleep(stepCD);
+                if(!mController.isRealBot){
+                    Thread.sleep(stepCD);
+                }
                 currRobotPos=mController.getRobotPos();
                 publish(currRobotPos);
 

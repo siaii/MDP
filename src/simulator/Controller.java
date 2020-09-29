@@ -12,6 +12,8 @@ import robot.Robot;
 
 import java.util.ArrayList;
 
+import org.graalvm.compiler.debug.MethodFilter;
+
 import static robot.ORIENTATION.*;
 
 //TODO
@@ -33,7 +35,7 @@ public class Controller {
     private Map arena;
     private True_Map trueArena;
     private Camera camera;
-    private static final boolean isRealBot=false;
+    public static final boolean isRealBot=false;
     private boolean isArenaExplored=false;
 
     private PCClient pcClient;
@@ -112,15 +114,16 @@ public class Controller {
     }
 
     //Default fastest path to Finish
-    public void runFastestPath() throws InterruptedException {
+    public void runFastestPath(int waypointX, int waypointY) throws InterruptedException {
         if(!isArenaExplored){
             System.out.println("Please explore the arena first");
             return;
         }
-        fastestPathAlgo.runFastestPath(MAP_CONST.FINISH_ZONE_CENTER_X, MAP_CONST.FINISH_ZONE_CENTER_Y);
+        fastestPathAlgo.runFastestPath(waypointX, waypointY);
+        //fastestPathAlgo.runFastestPath(MAP_CONST.FINISH_ZONE_CENTER_X, MAP_CONST.FINISH_ZONE_CENTER_Y);
     }
 
-    public void runFastestPath(int destX, int destY) throws InterruptedException {
+    public void gotoFastestPath(int destX, int destY) throws InterruptedException {
         if(!isArenaExplored){
             System.out.println("Please explore the arena first");
             return;
@@ -133,14 +136,14 @@ public class Controller {
         ArrayList<int[]> unexplored = arena.getUnexploredCoords();
         //Go to unexplored part, or if there are none go to start(should already be at the start)
         if(!unexplored.isEmpty()){
-            runFastestPath(unexplored.get(unexplored.size()-1)[0], unexplored.get(unexplored.size()-1)[1]);
+            gotoFastestPath(unexplored.get(unexplored.size()-1)[0], unexplored.get(unexplored.size()-1)[1]);
         }else{
             robotGoToStart();
         }
     }
 
     public void robotGoToStart() throws InterruptedException {
-        runFastestPath(MAP_CONST.ROBOT_START_ZONE_CENTER_X, MAP_CONST.ROBOT_START_ZONE_CENTER_Y);
+        gotoFastestPath(MAP_CONST.ROBOT_START_ZONE_CENTER_X, MAP_CONST.ROBOT_START_ZONE_CENTER_Y);
     }
 
 

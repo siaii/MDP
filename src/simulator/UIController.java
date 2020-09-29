@@ -92,7 +92,8 @@ public class UIController extends JFrame {
             @Override
             public void actionPerformed(ActionEvent e) {
                 try {
-                    mainController.runFastestPath();
+                    //TODO  change the parameter to waypoint
+                    mainController.runFastestPath(5, 6);
                 } catch (InterruptedException ex) {
                     ex.printStackTrace();
                 }
