@@ -15,12 +15,7 @@ import java.util.ArrayList;
 import static robot.ORIENTATION.*;
 
 //TODO
-// Send the mdf string to rpi, then to android
-// Send command to rpi then to robot
 // Receive image coords and id from rpi
-// Add Fastest path waypoint to the fastest path algo
-// Optimize fastest path and exploration to not move the robot one tile at a time, but 1-9 tiles
-// Android has a message that moves it 1-9 tile ahead, and turn left/right, for fastest path ONLY for now
 
 
 public class Controller {
@@ -117,8 +112,8 @@ public class Controller {
             System.out.println("Please explore the arena first");
             return;
         }
+        fastestPathAlgo.setFinishedWaypoint(true);
         fastestPathAlgo.runFastestPath(waypointX, waypointY);
-        //fastestPathAlgo.runFastestPath(MAP_CONST.FINISH_ZONE_CENTER_X, MAP_CONST.FINISH_ZONE_CENTER_Y);
     }
 
     public void gotoFastestPath(int destX, int destY) throws InterruptedException {

@@ -18,6 +18,7 @@ public class FastestPathAlgorithm {
     private boolean explorationMode = true;
     private boolean goingToStart = false;
     private boolean isPathFound;
+    private boolean finishedWaypoint=false;
     private int stepCD;
     FastestPathTask fastestPathTask;
 
@@ -53,6 +54,10 @@ public class FastestPathAlgorithm {
             }
             System.out.println();
         }
+    }
+
+    public void setFinishedWaypoint(boolean val){
+        finishedWaypoint=val;
     }
 
     private void initCostArray(){
@@ -443,7 +448,9 @@ public class FastestPathAlgorithm {
                 }
             }else{
                 try {
-                    runFastestPath(MAP_CONST.FINISH_ZONE_CENTER_X, MAP_CONST.FINISH_ZONE_CENTER_Y);
+                    if(finishedWaypoint){
+                        runFastestPath(MAP_CONST.FINISH_ZONE_CENTER_X, MAP_CONST.FINISH_ZONE_CENTER_Y);
+                    }
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
