@@ -113,6 +113,7 @@ public class Controller {
             return;
         }
         fastestPathAlgo.setFinishedWaypoint(true);
+        fastestPathAlgo.setExplorationMode(false);
         fastestPathAlgo.runFastestPath(waypointX, waypointY);
     }
 
@@ -131,14 +132,20 @@ public class Controller {
         if(!unexplored.isEmpty()){
             gotoFastestPath(unexplored.get(unexplored.size()-1)[0], unexplored.get(unexplored.size()-1)[1]);
         }else{
-            robotGoToStart();
+            int[] robotPos = getRobotPos();
+            if(robotPos[0]==MAP_CONST.ROBOT_START_ZONE_CENTER_X && robotPos[1]==MAP_CONST.ROBOT_START_ZONE_CENTER_Y){
+                //Send stop exploration here
+                System.out.println("send se1");
+            }else{
+                fastestPathAlgo.setGoingToStart();
+                robotGoToStart();
+            }
         }
     }
 
     public void robotGoToStart() throws InterruptedException {
         gotoFastestPath(MAP_CONST.ROBOT_START_ZONE_CENTER_X, MAP_CONST.ROBOT_START_ZONE_CENTER_Y);
     }
-
 
     public void robotTurnRight() throws InterruptedException {
         String mdf = virtualRobot.mdfString();

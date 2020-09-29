@@ -60,6 +60,10 @@ public class FastestPathAlgorithm {
         finishedWaypoint=val;
     }
 
+    public void setExplorationMode(boolean val){
+        explorationMode=val;
+    }
+
     private void initCostArray(){
         for(int x=0; x<MAP_CONST.MAP_GRID_WIDTH; ++x){
             for(int y=0; y<MAP_CONST.MAP_GRID_HEIGHT; ++y){
@@ -379,8 +383,8 @@ public class FastestPathAlgorithm {
 
         @Override
         protected Void doInBackground() throws Exception {
-            for(int i=0; i<pathString.length(); ++i){
-                switch (pathString.charAt(i)){
+            for (int i = 0; i < pathString.length(); ++i) {
+                switch (pathString.charAt(i)) {
                     case 'F':
                         mainController.robotMoveForward();
                         break;
@@ -396,7 +400,7 @@ public class FastestPathAlgorithm {
                         break;
                 }
                 publish();
-                if(!mainController.isRealBot){
+                if (!mainController.isRealBot) {
                     Thread.sleep(stepCD);
                 }
             }
@@ -413,43 +417,50 @@ public class FastestPathAlgorithm {
         @Override
         protected void done() {
             //Only process if currently still in exploration moed
-            if(explorationMode){
+            if (explorationMode) {
                 //If going back to start after exploration has finished
-                if(goingToStart){
-                    goingToStart=false;
-                    explorationMode=false;
+                if (goingToStart) {
+                    goingToStart = false;
+                    explorationMode = false;
+                    //Send stop exploration
+                    System.out.println("send se2");
                     try {
                         mainController.resetRobotOrientation();
                     } catch (InterruptedException e) {
                         e.printStackTrace();
                     }
-                }else{
+                } else {
                     ArrayList<int[]> unexplored = mainController.getMapUnexplored();
 
-                    if(!unexplored.isEmpty()){
+                    if (!unexplored.isEmpty()) {
                         try {
                             //Update the gridCost array to new map values
                             initCostArray();
                             mainController.resetRobotOrientation();
 
                             //Visit from the back because it is closer to Start, (0,0) is on top left corner
-                            mainController.runFastestPath(unexplored.get(unexplored.size()-1)[0], unexplored.get(unexplored.size()-1)[1]);
+                            mainController.runFastestPath(unexplored.get(unexplored.size() - 1)[0], unexplored.get(unexplored.size() - 1)[1]);
                         } catch (InterruptedException e) {
                             e.printStackTrace();
                         }
-                    }else{
+                    } else {
                         try {
-                            goingToStart=true;
+                            goingToStart = true;
                             mainController.robotGoToStart();
                         } catch (InterruptedException e) {
                             e.printStackTrace();
                         }
                     }
                 }
-            }else{
+            } else {
                 try {
-                    if(finishedWaypoint){
+                    if (finishedWaypoint) {
                         runFastestPath(MAP_CONST.FINISH_ZONE_CENTER_X, MAP_CONST.FINISH_ZONE_CENTER_Y);
+                        int[] robotPos = mainController.getRobotPos();
+                        if (robotPos[0] == MAP_CONST.FINISH_ZONE_CENTER_X && robotPos[1] == MAP_CONST.FINISH_ZONE_CENTER_Y) {
+                            //Send stop fastest path here
+                            System.out.println("send sf");
+                        }
                     }
                 } catch (InterruptedException e) {
                     e.printStackTrace();
@@ -457,5 +468,4 @@ public class FastestPathAlgorithm {
             }
         }
     }
-
 }

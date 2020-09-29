@@ -74,8 +74,7 @@ public class UIController extends JFrame {
 
         JButton exploreBut = new JButton("Explore");
         JButton fastestBut = new JButton("Fastest Path");
-
-
+        
         exploreBut.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
