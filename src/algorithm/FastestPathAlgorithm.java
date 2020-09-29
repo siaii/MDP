@@ -5,6 +5,7 @@ import robot.ORIENTATION;
 import robot.ROBOT_CONST;
 import simulator.Controller;
 import simulator.UIController;
+import simulator.PCClient;
 
 import javax.swing.*;
 import java.util.*;
@@ -22,11 +23,14 @@ public class FastestPathAlgorithm {
     private int stepCD;
     FastestPathTask fastestPathTask;
 
+    private PCClient pcClient;
+
     private gridNode[][] gridNodeArray = new gridNode[MAP_CONST.MAP_GRID_HEIGHT][MAP_CONST.MAP_GRID_WIDTH];
 
     public FastestPathAlgorithm(){
         mainController = Controller.getInstance();
         ui = UIController.getInstance();
+        pcClient = PCClient.getInstance();
     }
 
     private class gridNode{
@@ -423,6 +427,9 @@ public class FastestPathAlgorithm {
                     goingToStart = false;
                     explorationMode = false;
                     //Send stop exploration
+                    if(mainController.isRealBot) {
+                        pcClient.sendPacket("se");
+                    }
                     System.out.println("send se2");
                     try {
                         mainController.resetRobotOrientation();
@@ -460,6 +467,7 @@ public class FastestPathAlgorithm {
                         if (robotPos[0] == MAP_CONST.FINISH_ZONE_CENTER_X && robotPos[1] == MAP_CONST.FINISH_ZONE_CENTER_Y) {
                             //Send stop fastest path here
                             System.out.println("send sf");
+                            pcClient.sendPacket("sf");
                         }
                     }
                 } catch (InterruptedException e) {

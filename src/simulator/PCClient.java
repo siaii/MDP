@@ -14,6 +14,8 @@ import java.util.concurrent.TimeUnit;
 
 
 public class PCClient {
+	private static PCClient _instance = null;
+
     InetAddress host;
 	Socket socket = null;
 	BufferedReader  input = null;;
@@ -21,9 +23,23 @@ public class PCClient {
 	String IP_Addr;
 	int Port;
 	boolean firstflag = false;
-	public PCClient(String IP_Addr, int Port){
+
+	static Boolean connect;
+
+
+	public static PCClient getInstance() {
+		if(_instance==null){
+			_instance = new PCClient(CONFIG.SERVER_HOST, CONFIG.SERVER_PORT);
+			connect = _instance.connectToDevice();
+		}
+		if (connect) return _instance;
+		else return null;
+	}
+
+	private PCClient(String IP_Addr, int Port){
 		this.IP_Addr = IP_Addr;
 		this.Port = Port;
+		_instance = this;
 	}
 
 
@@ -97,7 +113,7 @@ public class PCClient {
 
 				// long timestart = System.currentTimeMillis();
 				while(!input.ready()) {
-					TimeUnit.SECONDS.sleep(10);
+					TimeUnit.SECONDS.sleep(5);
 				}
 				// System.out.println(input.readLine());
 				instruction = input.readLine();

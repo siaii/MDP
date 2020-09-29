@@ -1,5 +1,6 @@
 package simulator;
 
+
 import algorithm.ExplorationAlgorithm;
 import algorithm.FastestPathAlgorithm;
 import map.ACCESS;
@@ -56,13 +57,12 @@ public class Controller {
     public True_Map getTrueArena(){ return trueArena;}
 
     public void Initialize(){
-        pcClient = new PCClient(CONFIG.SERVER_HOST, CONFIG.SERVER_PORT);
-        connect = pcClient.connectToDevice();
+        pcClient = PCClient.getInstance();
 
         ui = new UIController();
         arena = new Map();
         trueArena = new True_Map();
-        virtualRobot = new Robot(MAP_CONST.ROBOT_START_ZONE_CENTER_X,MAP_CONST.ROBOT_START_ZONE_CENTER_Y, NORTH, isRealBot, pcClient);
+        virtualRobot = new Robot(MAP_CONST.ROBOT_START_ZONE_CENTER_X,MAP_CONST.ROBOT_START_ZONE_CENTER_Y, NORTH, isRealBot);
         exploreAlgo = new ExplorationAlgorithm();
         fastestPathAlgo = new FastestPathAlgorithm();
         camera = new Camera();
@@ -70,6 +70,15 @@ public class Controller {
 
     public void run() throws InterruptedException {
         ui.CreateUI();
+        while (!isRealBot){
+            String cmd = pcClient.receivePacket();
+            if (cmd == "ex") startExploration();
+            else if (cmd.substring(0,2) == "pf"){
+                int x = Integer.parseInt(cmd.split(",")[2]);
+                int y = 19 - Integer.parseInt(cmd.split(",")[3]);
+                runFastestPath(x,y);
+            }
+        }
     }
 
     public int[] getRobotPos(){
@@ -135,6 +144,7 @@ public class Controller {
             int[] robotPos = getRobotPos();
             if(robotPos[0]==MAP_CONST.ROBOT_START_ZONE_CENTER_X && robotPos[1]==MAP_CONST.ROBOT_START_ZONE_CENTER_Y){
                 //Send stop exploration here
+                pcClient.sendPacket("se");
                 System.out.println("send se1");
             }else{
                 fastestPathAlgo.setGoingToStart();

@@ -28,9 +28,9 @@ public class Robot {
 
 
 
-    public Robot(int startX, int startY, ORIENTATION startOrientation, boolean isReal, PCClient pcClient){
+    public Robot(int startX, int startY, ORIENTATION startOrientation, boolean isReal){
         mainController= Controller.getInstance();
-        this.pcClient = pcClient;
+        pcClient = PCClient.getInstance();
 
         isRealBot=isReal;
         robotPosition[0] = startX;
