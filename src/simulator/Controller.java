@@ -147,7 +147,7 @@ public class Controller {
             int[] robotPos = getRobotPos();
             if(robotPos[0]==MAP_CONST.ROBOT_START_ZONE_CENTER_X && robotPos[1]==MAP_CONST.ROBOT_START_ZONE_CENTER_Y){
                 //Send stop exploration here
-                pcClient.sendPacket("se");
+                if (isRealBot) pcClient.sendPacket("se");
                 System.out.println("send se1");
             }else{
                 fastestPathAlgo.setGoingToStart();

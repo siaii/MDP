@@ -404,7 +404,7 @@ public class FastestPathAlgorithm {
                         break;
                 }
                 publish();
-                if (!mainController.isRealBot) {
+                if (!Controller.isRealBot) {
                     Thread.sleep(stepCD);
                 }
             }
@@ -427,7 +427,7 @@ public class FastestPathAlgorithm {
                     goingToStart = false;
                     explorationMode = false;
                     //Send stop exploration
-                    if(mainController.isRealBot) {
+                    if(Controller.isRealBot) {
                         pcClient.sendPacket("se");
                     }
                     System.out.println("send se2");
@@ -467,7 +467,7 @@ public class FastestPathAlgorithm {
                         if (robotPos[0] == MAP_CONST.FINISH_ZONE_CENTER_X && robotPos[1] == MAP_CONST.FINISH_ZONE_CENTER_Y) {
                             //Send stop fastest path here
                             System.out.println("send sf");
-                            pcClient.sendPacket("sf");
+                            if(Controller.isRealBot) pcClient.sendPacket("sf");
                         }
                     }
                 } catch (InterruptedException e) {
