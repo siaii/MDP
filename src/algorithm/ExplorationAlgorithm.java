@@ -12,7 +12,7 @@ import java.util.List;
 public class ExplorationAlgorithm {
     private Controller mController;
     private UIController ui;
-    private MODE explorationMode;
+    private MODE explorationMode = MODE.DEFAULT;
     private long durationMillis;
     private long endTime;
     private int stepCD;
@@ -64,6 +64,7 @@ public class ExplorationAlgorithm {
                 if (mController.CheckLeftIsAccessible(currRobotPos[0], currRobotPos[1])) {
                     mController.robotTurnLeft();
                     if(mController.checkRobotFront()){
+                        Thread.sleep(1000);
                         mController.robotMoveForward();
                     }
                 }else {
@@ -76,8 +77,8 @@ public class ExplorationAlgorithm {
                 }
 
                 //Sleep is for simulator only
-                if(!mController.isRealBot){
-                    Thread.sleep(stepCD);
+                if(mController.isRealBot){
+                    Thread.sleep(1000);
                 }
                 currRobotPos=mController.getRobotPos();
                 publish(currRobotPos);

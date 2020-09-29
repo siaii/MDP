@@ -29,7 +29,7 @@ public class Controller {
     private Map arena;
     private True_Map trueArena;
     private Camera camera;
-    public static final boolean isRealBot=false;
+    public static final boolean isRealBot=true;
     private boolean isArenaExplored=false;
 
     private PCClient pcClient;
@@ -70,17 +70,18 @@ public class Controller {
 
     public void run() throws InterruptedException {
         ui.CreateUI();
+        // _instance.startExploration();
         if (isRealBot) {
             String cmd;
-            while (true){
-                cmd = pcClient.receivePacket();
-                if (cmd == "ex") startExploration();
-                else if (cmd.substring(0,2) == "pf"){
-                    int x = Integer.parseInt(cmd.split(",")[2]);
-                    int y = 19 - Integer.parseInt(cmd.split(",")[3]);
-                    runFastestPath(x,y);
-                }
-            }
+            cmd = pcClient.receivePacket();
+            System.out.println(cmd);
+            if (cmd.equals("ex")) _instance.startExploration();
+//            cmd = pcClient.receivePacket();
+//            if (cmd.substring(0,2).equals("pf")){
+//                int x = Integer.parseInt(cmd.split(",")[2]);
+//                int y = 19 - Integer.parseInt(cmd.split(",")[3]);
+//                _instance.runFastestPath(x,y);
+//            }
         }
     }
 
@@ -99,13 +100,13 @@ public class Controller {
     //Check if the "steps" steps in front is accessible or not (should be in checkRobotFront?)
     public void robotMoveForward(int steps) throws InterruptedException {
         if(checkRobotFront()){
+            virtualRobot.Move_Forward(steps);
+            virtualRobot.SenseAll();
             String mdf = virtualRobot.mdfString();
             if(isRealBot){
                 //Send command to rpi
                 pcClient.sendPacket("1," + mdf);
             }
-            virtualRobot.Move_Forward(steps);
-            virtualRobot.SenseAll();
         }else{
             System.out.println("robot bumped to wall");
         }
@@ -161,21 +162,21 @@ public class Controller {
     }
 
     public void robotTurnRight() throws InterruptedException {
+        virtualRobot.Turn_Right();
         String mdf = virtualRobot.mdfString();
         if(isRealBot){
             //Send command to rpi
             pcClient.sendPacket("D," + mdf);
         }
-        virtualRobot.Turn_Right();
     }
 
     public void robotTurnLeft() throws InterruptedException {
+        virtualRobot.Turn_Left();
         String mdf = virtualRobot.mdfString();
         if(isRealBot){
             //Send command to rpi
             pcClient.sendPacket("A," + mdf);
         }
-        virtualRobot.Turn_Left();
     }
 
     public void updateVirtualArena(int coordX, int coordY, boolean isWall){

@@ -169,7 +169,7 @@ public class Robot {
      */
     public void SenseAll(){
         int[] sensorResult = new int[6];
-        if(!isRealBot){
+        if(isRealBot){
             sensorResult[0]=Front_Front_Left_Sensor.sense();
             sensorResult[1]=Front_Front_Mid_Sensor.sense();
             sensorResult[2]=Front_Front_Right_Sensor.sense();
@@ -198,7 +198,6 @@ public class Robot {
         String robotDirection = convertDirToInt();
         String msg = mdf +","+robotPosString+","+robotDirection;
         //Send mdf string to android
-        System.out.println(msg);
 
         return msg;
     }
