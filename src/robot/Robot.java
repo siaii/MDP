@@ -24,7 +24,7 @@ public class Robot {
     private Sensor Front_Front_Right_Sensor;
     private Sensor Left_Front_Left_Sensor;
     private Sensor Left_Bottom_Left_Sensor;
-    private Sensor Right_Bottom_Right_Sensor; //Long range
+    private Sensor Right_Front_Right_Sensor; //Long range
 
 
 
@@ -42,7 +42,7 @@ public class Robot {
         Front_Front_Right_Sensor=new Sensor(NORTH, ROBOT_CONST.SHORT_RANGE_MAX_DISTANCE, ROBOT_CONST.SHORT_RANGE_MIN_DISTANCE, 1, -1, this);
         Left_Front_Left_Sensor=new Sensor(WEST, ROBOT_CONST.SHORT_RANGE_MAX_DISTANCE, ROBOT_CONST.SHORT_RANGE_MIN_DISTANCE, -1, -1, this);
         Left_Bottom_Left_Sensor=new Sensor(WEST, ROBOT_CONST.SHORT_RANGE_MAX_DISTANCE, ROBOT_CONST.SHORT_RANGE_MIN_DISTANCE, -1, 1, this);
-        Right_Bottom_Right_Sensor=new Sensor(EAST, ROBOT_CONST.LONG_RANGE_MAX_DISTANCE, ROBOT_CONST.LONG_RANGE_MIN_DISTANCE, 1, 1, this);
+        Right_Front_Right_Sensor=new Sensor(EAST, ROBOT_CONST.LONG_RANGE_MAX_DISTANCE, ROBOT_CONST.LONG_RANGE_MIN_DISTANCE, 1, -1, this);
     }
 
 
@@ -56,7 +56,7 @@ public class Robot {
         Front_Front_Right_Sensor.robotTurnLeft();
         Left_Bottom_Left_Sensor.robotTurnLeft();
         Left_Front_Left_Sensor.robotTurnLeft();
-        Right_Bottom_Right_Sensor.robotTurnLeft();
+        Right_Front_Right_Sensor.robotTurnLeft();
     }
 
     private void updateSensorDirRight(){
@@ -65,7 +65,7 @@ public class Robot {
         Front_Front_Right_Sensor.robotTurnRight();
         Left_Bottom_Left_Sensor.robotTurnRight();
         Left_Front_Left_Sensor.robotTurnRight();
-        Right_Bottom_Right_Sensor.robotTurnRight();
+        Right_Front_Right_Sensor.robotTurnRight();
     }
 
 
@@ -108,7 +108,6 @@ public class Robot {
                 break;
         }
         updateSensorDirLeft();
-        mainController.TakePicture();
     }
 
     public void Move_Forward(){
@@ -124,6 +123,7 @@ public class Robot {
                 break;
             case EAST:
                 robotPosition[0]++;
+                break;
         }
     }
 
@@ -140,7 +140,9 @@ public class Robot {
                 break;
             case EAST:
                 robotPosition[0]+=steps;
+                break;
         }
+        mainController.TakePicture();
     }
 
     public void Move_Back(){
@@ -156,6 +158,7 @@ public class Robot {
                 break;
             case EAST:
                 robotPosition[0]--;
+                break;
         }
     }
 
@@ -182,14 +185,14 @@ public class Robot {
             sensorResult[2]=Front_Front_Right_Sensor.sense();
             sensorResult[3]=Left_Front_Left_Sensor.sense();
             sensorResult[4]=Left_Bottom_Left_Sensor.sense();
-            sensorResult[5]=Right_Bottom_Right_Sensor.sense();
+            sensorResult[5]=Right_Front_Right_Sensor.sense();
         }
         Front_Front_Left_Sensor.processSensorResult(sensorResult[0]);
         Front_Front_Mid_Sensor.processSensorResult(sensorResult[1]);
         Front_Front_Right_Sensor.processSensorResult(sensorResult[2]);
         Left_Front_Left_Sensor.processSensorResult(sensorResult[3]);
         Left_Bottom_Left_Sensor.processSensorResult(sensorResult[4]);
-        Right_Bottom_Right_Sensor.processSensorResult(sensorResult[5]);
+        Right_Front_Right_Sensor.processSensorResult(sensorResult[5]);
 
     }
 
