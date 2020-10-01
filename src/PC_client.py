@@ -2,7 +2,7 @@ import socket
 import time
 
 SERVER_HOST = '192.168.7.7'  # The server's hostname or IP address
-SERVER_PORT = 8080        # The port used by the server
+SERVER_PORT = 8090        # The port used by the server
 SOCKET_BUFFER_SIZE = 512 
 
 class Client_Algorithm:

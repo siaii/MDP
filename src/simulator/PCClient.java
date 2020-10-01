@@ -110,7 +110,7 @@ public class PCClient {
 
 			//need to rethink this.
 			do {
-
+				System.out.println("~~~~~Listen to Rpi~~~~~");
 				// long timestart = System.currentTimeMillis();
 				while(!input.ready()) {
 					TimeUnit.SECONDS.sleep(5);
@@ -130,7 +130,7 @@ public class PCClient {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		} 
-
+		System.out.println("~~~~~Instruction:" + instruction + "~~~~~");
 		return instruction;
 	}
 

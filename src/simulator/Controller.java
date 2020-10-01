@@ -29,7 +29,7 @@ public class Controller {
     private Map arena;
     private True_Map trueArena;
     private Camera camera;
-    public static final boolean isRealBot=true;
+    public static final boolean isRealBot=false;
     private boolean isArenaExplored=false;
 
     private PCClient pcClient;
@@ -74,7 +74,6 @@ public class Controller {
         if (isRealBot) {
             String cmd;
             cmd = pcClient.receivePacket();
-            System.out.println(cmd);
             if (cmd.equals("ex")) _instance.startExploration();
 //            cmd = pcClient.receivePacket();
 //            if (cmd.substring(0,2).equals("pf")){
@@ -101,12 +100,12 @@ public class Controller {
     public void robotMoveForward(int steps) throws InterruptedException {
         if(checkRobotFront()){
             virtualRobot.Move_Forward(steps);
-            virtualRobot.SenseAll();
             String mdf = virtualRobot.mdfString();
             if(isRealBot){
                 //Send command to rpi
                 pcClient.sendPacket("1," + mdf);
             }
+            virtualRobot.SenseAll();
         }else{
             System.out.println("robot bumped to wall");
         }

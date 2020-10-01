@@ -64,7 +64,7 @@ public class ExplorationAlgorithm {
                 if (mController.CheckLeftIsAccessible(currRobotPos[0], currRobotPos[1])) {
                     mController.robotTurnLeft();
                     if(mController.checkRobotFront()){
-                        Thread.sleep(1000);
+//                        Thread.sleep(1000);
                         mController.robotMoveForward();
                     }
                 }else {
@@ -77,8 +77,8 @@ public class ExplorationAlgorithm {
                 }
 
                 //Sleep is for simulator only
-                if(mController.isRealBot){
-                    Thread.sleep(1000);
+                if(!mController.isRealBot){
+                    Thread.sleep(stepCD);
                 }
                 currRobotPos=mController.getRobotPos();
                 publish(currRobotPos);
@@ -102,6 +102,7 @@ public class ExplorationAlgorithm {
                 if(explorationMode==MODE.DEFAULT){
                     mController.exploredUnexploredTiles();
                 }else{
+                    System.out.println("~~~~~Start Fastest Path to explore~~~~~");
                     mController.setFastestPathGoingToStart();
                     mController.robotGoToStart();
                 }

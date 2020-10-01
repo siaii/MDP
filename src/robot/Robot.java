@@ -170,18 +170,20 @@ public class Robot {
     public void SenseAll(){
         int[] sensorResult = new int[6];
         if(isRealBot){
+            //get real sensor data here
+            String[] sensorData = pcClient.receivePacket().split(",");
+            // sensorResult = Arrays.asList(sensorData).stream().mapToInt(Integer::parseInt).toArray();
+            for (int i = 0; i < sensorResult.length; i++) {
+                sensorResult[i] = Integer.parseInt(sensorData[i]) + ROBOT_CONST.OFFSET;
+            }
+        }else{
             sensorResult[0]=Front_Front_Left_Sensor.sense();
             sensorResult[1]=Front_Front_Mid_Sensor.sense();
             sensorResult[2]=Front_Front_Right_Sensor.sense();
             sensorResult[3]=Left_Front_Left_Sensor.sense();
             sensorResult[4]=Left_Bottom_Left_Sensor.sense();
             sensorResult[5]=Right_Bottom_Right_Sensor.sense();
-        }else{
-            //get real sensor data here
-            String[] sensorData = pcClient.receivePacket().split(",");
-            sensorResult = Arrays.asList(sensorData).stream().mapToInt(Integer::parseInt).toArray();
         }
-
         Front_Front_Left_Sensor.processSensorResult(sensorResult[0]);
         Front_Front_Mid_Sensor.processSensorResult(sensorResult[1]);
         Front_Front_Right_Sensor.processSensorResult(sensorResult[2]);
@@ -198,6 +200,7 @@ public class Robot {
         String robotDirection = convertDirToInt();
         String msg = mdf +","+robotPosString+","+robotDirection;
         //Send mdf string to android
+        System.out.println(mdf);
 
         return msg;
     }
