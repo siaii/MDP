@@ -16,6 +16,7 @@ public class ExplorationAlgorithm {
     private long durationMillis;
     private long endTime;
     private int stepCD;
+    private ExploreTask explore;
 
     public ExplorationAlgorithm(){
         mController = Controller.getInstance();
@@ -30,11 +31,15 @@ public class ExplorationAlgorithm {
             ui = UIController.getInstance();
         }
     }
+
+    public boolean getIsExploreFinished(){
+        return explore.isDone();
+    }
     public void exploreArena() throws InterruptedException {
         durationMillis=mController.getExploreDuration();
         stepCD=mController.getRobotMoveSpeed();
         endTime=System.currentTimeMillis()+durationMillis;
-        ExploreTask explore = new ExploreTask();
+        explore = new ExploreTask();
         explore.execute();
 
     }
