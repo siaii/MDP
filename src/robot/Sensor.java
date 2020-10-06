@@ -121,7 +121,7 @@ public class Sensor {
             }
         }
 
-        return -1;
+        return maxDistance;
     }
 
     public void processSensorResult(int res){
@@ -147,10 +147,15 @@ public class Sensor {
         for(int i=minDistance; i<maxDistance; ++i){
             checkCoords[axis]+=dir;
             if(checkValidCoords(checkCoords[0], checkCoords[1])){
-                if(i!=res){
-                    mController.updateVirtualArena(checkCoords[0], checkCoords[1], false);
+                if(mController.isVirtualArenaUpdateContinue(checkCoords[0], checkCoords[1])){
+                    //Either i<res or i!=res, both works in simulator, need to check with the real robot
+                    if(i<res){
+                        mController.updateVirtualArena(checkCoords[0], checkCoords[1], false);
+                    }else{
+                        mController.updateVirtualArena(checkCoords[0], checkCoords[1], true);
+                        break;
+                    }
                 }else{
-                    mController.updateVirtualArena(checkCoords[0], checkCoords[1], true);
                     break;
                 }
             }

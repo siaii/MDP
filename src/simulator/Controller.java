@@ -15,10 +15,6 @@ import java.util.ArrayList;
 
 import static robot.ORIENTATION.*;
 
-//TODO
-// Receive image coords and id from rpi
-
-
 public class Controller {
 
     private static Controller _instance = null;
@@ -71,18 +67,38 @@ public class Controller {
     public void run() throws InterruptedException {
         ui.CreateUI();
         // _instance.startExploration();
+        CreateWaitForFPThread();
         if (isRealBot) {
             String cmd;
             cmd = pcClient.receivePacket();
-            if (cmd.equals("ex")) _instance.startExploration();
-            while(!exploreAlgo.getIsExploreFinished());
-            cmd = pcClient.receivePacket();
-            if (cmd.substring(0,2).equals("pf")){
-                int x = Integer.parseInt(cmd.split(",")[2]);
-                int y = 19 - Integer.parseInt(cmd.split(",")[3]);
-                _instance.runFastestPath(x,y);
+            if (cmd.equals("ex")){
+                _instance.startExploration();
+                CreateWaitForFPThread();
             }
+
         }
+    }
+
+    private void CreateWaitForFPThread(){
+        Thread waitThread = new Thread(){
+            @Override
+            public void run() {
+                while(!exploreAlgo.getIsExploreFinished());
+                String cmd;
+                cmd = pcClient.receivePacket();
+                if (cmd.substring(0,2).equals("pf")){
+                    int x = Integer.parseInt(cmd.split(",")[2]);
+                    int y = 19 - Integer.parseInt(cmd.split(",")[3]);
+
+                    try {
+                        _instance.runFastestPath(x,y);
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+                }
+            }
+        };
+        waitThread.start();
     }
 
     public int[] getRobotPos(){
@@ -91,9 +107,6 @@ public class Controller {
 
     //Default move forward 1 step
     public void robotMoveForward() throws InterruptedException {
-        if(isRealBot){
-            //Send command to rpi
-        }
         robotMoveForward(1);
     }
 
@@ -114,7 +127,7 @@ public class Controller {
 
     public void startExploration() throws InterruptedException {
         exploreAlgo.setMode(ui.getExploreMode());
-        // virtualRobot.SenseFront();
+//        virtualRobot.SenseAll();
         exploreAlgo.exploreArena();
         isArenaExplored=true;
     }
@@ -177,6 +190,15 @@ public class Controller {
             //Send command to rpi
             pcClient.sendPacket("A," + mdf);
         }
+    }
+
+    public boolean isVirtualArenaUpdateContinue(int coordX, int coordY){
+        if(arena.GetExplored(coordX, coordY)){
+            if(arena.GetTrueWallAt(coordX, coordY)){
+                return false;
+            }
+        }
+        return true;
     }
 
     public void updateVirtualArena(int coordX, int coordY, boolean isWall){
@@ -423,10 +445,6 @@ public class Controller {
         return 1000/stepPerSec;
     }
 
-    public void TakePicture(){
-        System.out.println("Taking picture");
-        camera.TakePicture();
-    }
 
     public String getMdfString(){
         String part1 = arena.GetMdfStringExplored();

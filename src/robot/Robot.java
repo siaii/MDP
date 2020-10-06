@@ -89,7 +89,6 @@ public class Robot {
                 break;
         }
         updateSensorDirRight();
-        mainController.TakePicture();
     }
 
     public void Turn_Left(){
@@ -142,7 +141,6 @@ public class Robot {
                 robotPosition[0]+=steps;
                 break;
         }
-        mainController.TakePicture();
     }
 
     public void Move_Back(){
@@ -203,7 +201,7 @@ public class Robot {
         String robotDirection = convertDirToInt();
         String msg = mdf +","+robotPosString+","+robotDirection;
         //Send mdf string to android
-        System.out.println(mdf);
+        System.out.println("MDF: "+mdf);
 
         return msg;
     }

@@ -21,6 +21,7 @@ public class ExplorationAlgorithm {
     public ExplorationAlgorithm(){
         mController = Controller.getInstance();
         ui = UIController.getInstance();
+        explore = new ExploreTask();
     }
 
     private void GetControllerInstance(){
@@ -39,7 +40,6 @@ public class ExplorationAlgorithm {
         durationMillis=mController.getExploreDuration();
         stepCD=mController.getRobotMoveSpeed();
         endTime=System.currentTimeMillis()+durationMillis;
-        explore = new ExploreTask();
         explore.execute();
 
     }
