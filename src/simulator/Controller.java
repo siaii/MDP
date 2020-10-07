@@ -25,7 +25,7 @@ public class Controller {
     private Map arena;
     private True_Map trueArena;
     private Camera camera;
-    public static final boolean isRealBot=false;
+    public static final boolean isRealBot=true;
     private boolean isArenaExplored=false;
 
     private PCClient pcClient;
@@ -203,8 +203,6 @@ public class Controller {
     }
 
     public void updateVirtualArena(int coordX, int coordY, boolean isWall){
-        if(arena.GetExplored(coordX, coordY)) return;
-
         arena.SetExplored(coordX, coordY);
         if(isWall){
             arena.SetTrueWallAt(coordX, coordY);
