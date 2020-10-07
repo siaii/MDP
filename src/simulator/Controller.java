@@ -25,7 +25,7 @@ public class Controller {
     private Map arena;
     private True_Map trueArena;
     private Camera camera;
-    public static final boolean isRealBot=true;
+    public static final boolean isRealBot=false;
     private boolean isArenaExplored=false;
 
     private PCClient pcClient;
@@ -67,7 +67,6 @@ public class Controller {
     public void run() throws InterruptedException {
         ui.CreateUI();
         // _instance.startExploration();
-        CreateWaitForFPThread();
         if (isRealBot) {
             String cmd;
             cmd = pcClient.receivePacket();
