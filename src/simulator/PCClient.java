@@ -112,9 +112,7 @@ public class PCClient {
 			do {
 				System.out.println("~~~~~Listen to Rpi~~~~~");
 				// long timestart = System.currentTimeMillis();
-				while(!input.ready()) {
-					TimeUnit.SECONDS.sleep(5);
-				}
+//				while(!input.ready());
 				// System.out.println(input.readLine());
 				instruction = input.readLine();
 			}while(instruction == null ||instruction.equalsIgnoreCase(""));			
@@ -126,10 +124,7 @@ public class PCClient {
 			System.out.println("Receiving Error: " + e);
 			e.printStackTrace();
 			connectToDevice();
-		} catch (InterruptedException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} 
+		}
 		System.out.println("~~~~~Instruction:" + instruction + "~~~~~");
 		return instruction;
 	}

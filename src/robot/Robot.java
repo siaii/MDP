@@ -175,8 +175,11 @@ public class Robot {
             String[] sensorData = pcClient.receivePacket().split(",");
             // sensorResult = Arrays.asList(sensorData).stream().mapToInt(Integer::parseInt).toArray();
             for (int i = 0; i < sensorResult.length; i++) {
-                sensorResult[i] = Integer.parseInt(sensorData[i]) + ROBOT_CONST.OFFSET;
+                sensorResult[i] = Integer.parseInt(sensorData[i])+1;
             }
+//            sensorResult[0] += 1;
+//            sensorResult[1] += 1;
+//            sensorResult[2] += 1;
         }else{
             sensorResult[0]=Front_Front_Left_Sensor.sense();
             sensorResult[1]=Front_Front_Mid_Sensor.sense();

@@ -77,6 +77,7 @@ public class ExplorationAlgorithm {
                     if(mController.checkRobotFront()){
                         mController.robotMoveForward();
                     }else{
+                        //Calibrate robot
                         mController.robotTurnRight();
                     }
                 }
@@ -105,7 +106,7 @@ public class ExplorationAlgorithm {
             super.done();
             try {
                 if(explorationMode==MODE.DEFAULT){
-                    mController.exploredUnexploredTiles();
+//                    mController.exploredUnexploredTiles();
                 }else{
                     System.out.println("~~~~~Start Fastest Path to explore~~~~~");
                     mController.setFastestPathGoingToStart();

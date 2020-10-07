@@ -180,6 +180,7 @@ public class Controller {
         if(isRealBot){
             //Send command to rpi
             pcClient.sendPacket("D," + mdf);
+            virtualRobot.SenseAll();
         }
     }
 
@@ -189,6 +190,7 @@ public class Controller {
         if(isRealBot){
             //Send command to rpi
             pcClient.sendPacket("A," + mdf);
+            virtualRobot.SenseAll();
         }
     }
 
