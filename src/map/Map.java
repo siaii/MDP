@@ -81,50 +81,7 @@ public class Map {
     }
 
     public void RemoveTrueWallAt(int xPos, int yPos){
-        ArrayList<Map_Cells> neighbouringWalls = new ArrayList<>();
-
-        //Get the surrounding 8 cells to add back the virtual wall later
-        if(yPos>0){
-            if(GetTrueWallAt(xPos,yPos-1)){
-                neighbouringWalls.add(fullMap[yPos-1][xPos]);
-            }
-            if(xPos>0){
-                if(GetTrueWallAt(xPos-1, yPos-1)){
-                    neighbouringWalls.add(fullMap[yPos-1][xPos-1]);
-                }
-            }
-            if(xPos<MAP_CONST.MAP_GRID_WIDTH-1){
-                if(GetTrueWallAt(xPos+1, yPos-1)){
-                    neighbouringWalls.add(fullMap[yPos-1][xPos+1]);
-                }
-            }
-        }
-        if(yPos<MAP_CONST.MAP_GRID_HEIGHT-1){
-            if(GetTrueWallAt(xPos, yPos+1)){
-                neighbouringWalls.add(fullMap[yPos+1][xPos]);
-            }
-            if(xPos>0){
-                if(GetTrueWallAt(xPos-1, yPos+1)){
-                    neighbouringWalls.add(fullMap[yPos+1][xPos-1]);
-                }
-            }
-            if(xPos<MAP_CONST.MAP_GRID_WIDTH-1){
-                if(GetTrueWallAt(xPos+1, yPos+1)){
-                    neighbouringWalls.add(fullMap[yPos+1][xPos+1]);
-                }
-            }
-        }
-
-        if(xPos>0){
-            if(GetTrueWallAt(xPos-1, yPos)){
-                neighbouringWalls.add(fullMap[yPos][xPos-1]);
-            }
-        }
-        if(xPos<MAP_CONST.MAP_GRID_WIDTH-1){
-            if(GetTrueWallAt(xPos+1, yPos)){
-                neighbouringWalls.add(fullMap[yPos][xPos+1]);
-            }
-        }
+        ArrayList<Map_Cells> neighbouringWalls = FindNeighbouringWalls(xPos, yPos);
 
         //Set the true wall and virtual wall of this wall to false
         //The actual wall
@@ -164,6 +121,73 @@ public class Map {
         }
         //Set back the border of the map just in case
         SetBorderVirtualWall();
+    }
+
+    private ArrayList<Map_Cells> FindNeighbouringWalls(int xPos, int yPos) {
+        ArrayList<Map_Cells> neighbouringWalls = new ArrayList<>();
+
+//        //Get the surrounding 8 cells to add back the virtual wall later
+//        if(yPos>0){
+//            if(GetTrueWallAt(xPos,yPos-1)){
+//                neighbouringWalls.add(fullMap[yPos-1][xPos]);
+//            }
+//            if(xPos>0){
+//                if(GetTrueWallAt(xPos-1, yPos-1)){
+//                    neighbouringWalls.add(fullMap[yPos-1][xPos-1]);
+//                }
+//            }
+//            if(xPos< MAP_CONST.MAP_GRID_WIDTH-1){
+//                if(GetTrueWallAt(xPos+1, yPos-1)){
+//                    neighbouringWalls.add(fullMap[yPos-1][xPos+1]);
+//                }
+//            }
+//        }
+//        if(yPos<MAP_CONST.MAP_GRID_HEIGHT-1){
+//            if(GetTrueWallAt(xPos, yPos+1)){
+//                neighbouringWalls.add(fullMap[yPos+1][xPos]);
+//            }
+//            if(xPos>0){
+//                if(GetTrueWallAt(xPos-1, yPos+1)){
+//                    neighbouringWalls.add(fullMap[yPos+1][xPos-1]);
+//                }
+//            }
+//            if(xPos<MAP_CONST.MAP_GRID_WIDTH-1){
+//                if(GetTrueWallAt(xPos+1, yPos+1)){
+//                    neighbouringWalls.add(fullMap[yPos+1][xPos+1]);
+//                }
+//            }
+//        }
+//
+//        if(xPos>0){
+//            if(GetTrueWallAt(xPos-1, yPos)){
+//                neighbouringWalls.add(fullMap[yPos][xPos-1]);
+//            }
+//        }
+//        if(xPos<MAP_CONST.MAP_GRID_WIDTH-1){
+//            if(GetTrueWallAt(xPos+1, yPos)){
+//                neighbouringWalls.add(fullMap[yPos][xPos+1]);
+//            }
+//        }
+
+        for(int i=-2; i<=2; ++i){
+            for(int j=-2; j<=2; ++j){
+                if(i==0 && j==0) continue;
+
+                int[] checkPos={xPos+i, yPos+j};
+                if(checkValidCoords(checkPos[0], checkPos[1])){
+                    if(GetTrueWallAt(checkPos[0], checkPos[1])){
+                        neighbouringWalls.add(fullMap[checkPos[1]][checkPos[0]]);
+                    }
+                }
+            }
+        }
+        return neighbouringWalls;
+    }
+
+    private boolean checkValidCoords(int x, int y){
+        if(x<0 || x>MAP_CONST.MAP_GRID_WIDTH-1) return false;
+        if(y<0 || y>MAP_CONST.MAP_GRID_HEIGHT-1) return false;
+        return true;
     }
 
     public void SetBorderVirtualWall(){
