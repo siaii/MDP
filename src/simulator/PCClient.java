@@ -140,18 +140,4 @@ public class PCClient {
 		}
 	}
 
-	// public static void main(String[] args) {
-		
-	// 	PCClient pcclient = new PCClient("192.168.7.7", 8080);
-	// 	Boolean connect = pcclient.connectToDevice();
-	// 	if (connect) {
-	// 		int send = pcclient.sendPacket("1,mdf");
-	// 		// int send2 = pcclient.sendPacket("AND,mdf");
-	// 		System.out.println(pcclient.receivePacket());
-	// 	} else {
-	// 		System.out.println("Error");
-	// 	}
-	// 	pcclient.closeConnection();
-		
-	// }
 }

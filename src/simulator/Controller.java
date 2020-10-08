@@ -193,16 +193,10 @@ public class Controller {
         }
     }
 
-    public boolean isVirtualArenaUpdateContinue(int coordX, int coordY){
-        if(arena.GetExplored(coordX, coordY)){
-            if(arena.GetTrueWallAt(coordX, coordY)){
-                return false;
-            }
-        }
-        return true;
-    }
 
     public void updateVirtualArena(int coordX, int coordY, boolean isWall){
+        if(arena.GetExplored(coordX, coordY)) return;
+
         arena.SetExplored(coordX, coordY);
         if(isWall){
             arena.SetTrueWallAt(coordX, coordY);

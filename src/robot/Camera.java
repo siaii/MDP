@@ -47,10 +47,4 @@ public class Camera {
         return new int[]{imgPosX, imgPosY};
     }
 
-    public void TakePicture(){
-        //Send command to rpi to take pic
-        //Receive info from python
-        //Send info to android
-        //Update map here?
-    }
 }
