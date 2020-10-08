@@ -106,6 +106,7 @@ public class ExplorationAlgorithm {
             super.done();
             try {
                 if(explorationMode==MODE.DEFAULT){
+                    mController.SendSE();
 //TODO decide this part                    mController.exploredUnexploredTiles();
                 }else{
                     System.out.println("~~~~~Start Fastest Path to explore~~~~~");

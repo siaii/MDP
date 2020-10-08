@@ -25,7 +25,7 @@ public class Controller {
     private Map arena;
     private True_Map trueArena;
     private Camera camera;
-    public static final boolean isRealBot=true;
+    public static final boolean isRealBot=false;
     private boolean isArenaExplored=false;
 
     private PCClient pcClient;
@@ -102,6 +102,10 @@ public class Controller {
 
     public int[] getRobotPos(){
         return virtualRobot.getRobotPosition();
+    }
+
+    public void SendSE(){
+        pcClient.sendPacket("se");
     }
 
     //Default move forward 1 step
@@ -193,19 +197,16 @@ public class Controller {
         }
     }
 
-    public boolean isVirtualArenaUpdateContinue(int coordX, int coordY){
-        if(arena.GetExplored(coordX, coordY)){
-            if(arena.GetTrueWallAt(coordX, coordY)){
-                return false;
-            }
-        }
-        return true;
-    }
 
     public void updateVirtualArena(int coordX, int coordY, boolean isWall){
         arena.SetExplored(coordX, coordY);
+
         if(isWall){
             arena.SetTrueWallAt(coordX, coordY);
+        }else{
+            if(arena.GetTrueWallAt(coordX, coordY)){
+                arena.RemoveTrueWallAt(coordX, coordY);
+            }
         }
     }
 

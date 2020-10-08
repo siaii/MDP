@@ -7,6 +7,12 @@ public class Map {
         boolean isTrueWall=false;
         boolean isVirtualWall = false;
         boolean isExplored = false;
+        int xPos, yPos;
+
+        public Map_Cells(int x, int y){
+            xPos=x;
+            yPos=y;
+        }
 
         private void SetTrueWall(boolean val){
             isTrueWall=val;
@@ -30,7 +36,7 @@ public class Map {
     public Map(){
         for(int i = 0; i< MAP_CONST.MAP_GRID_HEIGHT; ++i){
             for(int j = 0; j< MAP_CONST.MAP_GRID_WIDTH; ++j){
-                fullMap[i][j] = new Map_Cells();
+                fullMap[i][j] = new Map_Cells(j,i);
                 if(i==0 || i== MAP_CONST.MAP_GRID_HEIGHT-1){
                     fullMap[i][j].SetVirtualWall(true);
                 }else if(j==0 || j== MAP_CONST.MAP_GRID_WIDTH-1){
@@ -71,7 +77,103 @@ public class Map {
         }
         if(xPos<MAP_CONST.MAP_GRID_WIDTH-1){
             fullMap[yPos][xPos+1].SetVirtualWall(true);
+        }
+    }
 
+    public void RemoveTrueWallAt(int xPos, int yPos){
+        ArrayList<Map_Cells> neighbouringWalls = new ArrayList<>();
+
+        //Get the surrounding 8 cells to add back the virtual wall later
+        if(yPos>0){
+            if(GetTrueWallAt(xPos,yPos-1)){
+                neighbouringWalls.add(fullMap[yPos-1][xPos]);
+            }
+            if(xPos>0){
+                if(GetTrueWallAt(xPos-1, yPos-1)){
+                    neighbouringWalls.add(fullMap[yPos-1][xPos-1]);
+                }
+            }
+            if(xPos<MAP_CONST.MAP_GRID_WIDTH-1){
+                if(GetTrueWallAt(xPos+1, yPos-1)){
+                    neighbouringWalls.add(fullMap[yPos-1][xPos+1]);
+                }
+            }
+        }
+        if(yPos<MAP_CONST.MAP_GRID_HEIGHT-1){
+            if(GetTrueWallAt(xPos, yPos+1)){
+                neighbouringWalls.add(fullMap[yPos+1][xPos]);
+            }
+            if(xPos>0){
+                if(GetTrueWallAt(xPos-1, yPos+1)){
+                    neighbouringWalls.add(fullMap[yPos+1][xPos-1]);
+                }
+            }
+            if(xPos<MAP_CONST.MAP_GRID_WIDTH-1){
+                if(GetTrueWallAt(xPos+1, yPos+1)){
+                    neighbouringWalls.add(fullMap[yPos+1][xPos+1]);
+                }
+            }
+        }
+
+        if(xPos>0){
+            if(GetTrueWallAt(xPos-1, yPos)){
+                neighbouringWalls.add(fullMap[yPos][xPos-1]);
+            }
+        }
+        if(xPos<MAP_CONST.MAP_GRID_WIDTH-1){
+            if(GetTrueWallAt(xPos+1, yPos)){
+                neighbouringWalls.add(fullMap[yPos][xPos+1]);
+            }
+        }
+
+        //Set the true wall and virtual wall of this wall to false
+        //The actual wall
+        fullMap[yPos][xPos].SetTrueWall(false);
+        fullMap[yPos][xPos].SetVirtualWall(false);
+
+        //The virtual wall on the surrounding 8 cells
+        if(yPos>0){
+            fullMap[yPos-1][xPos].SetVirtualWall(false);
+            if(xPos>0){
+                fullMap[yPos-1][xPos-1].SetVirtualWall(false);
+            }
+            if(xPos<MAP_CONST.MAP_GRID_WIDTH-1){
+                fullMap[yPos-1][xPos+1].SetVirtualWall(false);
+            }
+        }
+        if(yPos<MAP_CONST.MAP_GRID_HEIGHT-1){
+            fullMap[yPos+1][xPos].SetVirtualWall(false);
+            if(xPos>0){
+                fullMap[yPos+1][xPos-1].SetVirtualWall(false);
+            }
+            if(xPos<MAP_CONST.MAP_GRID_WIDTH-1){
+                fullMap[yPos+1][xPos+1].SetVirtualWall(false);
+            }
+        }
+
+        if(xPos>0){
+            fullMap[yPos][xPos-1].SetVirtualWall(false);
+        }
+        if(xPos<MAP_CONST.MAP_GRID_WIDTH-1){
+            fullMap[yPos][xPos+1].SetVirtualWall(false);
+        }
+
+        //Set back all the virtual wall of the remaining correct wall
+        for (Map_Cells cell:neighbouringWalls) {
+            SetTrueWallAt(cell.xPos, cell.yPos);
+        }
+        //Set back the border of the map just in case
+        SetBorderVirtualWall();
+    }
+
+    public void SetBorderVirtualWall(){
+        for(int i=0; i<MAP_CONST.MAP_GRID_HEIGHT; ++i){
+            fullMap[i][0].SetVirtualWall(true);
+            fullMap[i][MAP_CONST.MAP_GRID_WIDTH-1].SetVirtualWall(true);
+        }
+        for(int j=0; j<MAP_CONST.MAP_GRID_WIDTH; ++j){
+            fullMap[0][j].SetVirtualWall(true);
+            fullMap[MAP_CONST.MAP_GRID_HEIGHT-1][j].SetVirtualWall(true);
         }
     }
 
