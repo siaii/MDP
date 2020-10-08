@@ -152,7 +152,9 @@ public class Sensor {
         }
         if(res<maxDistance){
             checkCoords[axis]+=dir;
-            mController.updateVirtualArena(checkCoords[0], checkCoords[1], true);
+            if(checkValidCoords(checkCoords[0], checkCoords[1])){
+                mController.updateVirtualArena(checkCoords[0], checkCoords[1], true);
+            }
         }
     }
 
