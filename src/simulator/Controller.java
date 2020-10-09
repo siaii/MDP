@@ -25,7 +25,7 @@ public class Controller {
     private Map arena;
     private True_Map trueArena;
     private Camera camera;
-    public static final boolean isRealBot=false;
+    public static final boolean isRealBot=true;
     private boolean isArenaExplored=false;
 
     private PCClient pcClient;
@@ -86,8 +86,8 @@ public class Controller {
                 String cmd;
                 cmd = pcClient.receivePacket();
                 if (cmd.substring(0,2).equals("pf")){
-                    int x = Integer.parseInt(cmd.split(",")[2]);
-                    int y = 19 - Integer.parseInt(cmd.split(",")[3]);
+                    int x = Integer.parseInt(cmd.split(",")[1]);
+                    int y = 19 - Integer.parseInt(cmd.split(",")[2]);
 
                     try {
                         _instance.runFastestPath(x,y);
