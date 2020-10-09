@@ -14,7 +14,7 @@ public class FastestPathAlgorithm {
     private Controller mainController;
     private UIController ui;
     private ArrayList<ORIENTATION> pathToTake;
-    private int searchCountTimeout = 1000;
+    private int searchCountTimeout = 1500;
     private String pathString;
     private boolean explorationMode = true;
     private boolean goingToStart = false;
@@ -242,17 +242,13 @@ public class FastestPathAlgorithm {
         pathToTake.add(currNode);
 
         Collections.reverse(pathToTake);
-        for(int i=0; i<pathToTake.size(); ++i){
-            gridNode temp = pathToTake.get(i);
-            //System.out.printf("%d, %d\n", temp.nodePos[0], temp.nodePos[1]);
-        }
 
         pathString = turnPathToDirection(pathToTake);
     }
 
     private String turnPathToDirection(ArrayList<gridNode> path){
         StringBuilder robotMovement= new StringBuilder();
-        ORIENTATION currOrientation = ORIENTATION.NORTH;
+        ORIENTATION currOrientation = mainController.getRobotOrientation();
         for(int i=1; i<path.size(); ++i){
             //Robot going northward
             if(path.get(i).nodePos[1]-path.get(i-1).nodePos[1]<0){
@@ -387,6 +383,7 @@ public class FastestPathAlgorithm {
 
         @Override
         protected Void doInBackground() throws Exception {
+//            mainController.resetRobotOrientation();
             for (int i = 0; i < pathString.length(); ++i) {
                 switch (pathString.charAt(i)) {
                     case 'F':
