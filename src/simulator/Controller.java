@@ -104,6 +104,10 @@ public class Controller {
         return virtualRobot.getRobotPosition();
     }
 
+    public void sendSE(){
+        pcClient.sendPacket("se");
+    }
+
     //Default move forward 1 step
     public void robotMoveForward() throws InterruptedException {
         robotMoveForward(1);

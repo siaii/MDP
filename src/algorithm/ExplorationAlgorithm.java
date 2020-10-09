@@ -106,6 +106,7 @@ public class ExplorationAlgorithm {
             super.done();
             try {
                 if(explorationMode==MODE.DEFAULT){
+                    if(Controller.isRealBot) mController.sendSE();
 //TODO decide this part                    mController.exploredUnexploredTiles();
                 }else{
                     System.out.println("~~~~~Start Fastest Path to explore~~~~~");
