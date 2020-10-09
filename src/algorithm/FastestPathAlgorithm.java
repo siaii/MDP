@@ -252,7 +252,7 @@ public class FastestPathAlgorithm {
 
     private String turnPathToDirection(ArrayList<gridNode> path){
         StringBuilder robotMovement= new StringBuilder();
-        ORIENTATION currOrientation = ORIENTATION.NORTH;
+        ORIENTATION currOrientation = mainController.getRobotOrientation();
         for(int i=1; i<path.size(); ++i){
             //Robot going northward
             if(path.get(i).nodePos[1]-path.get(i-1).nodePos[1]<0){
