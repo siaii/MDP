@@ -120,7 +120,7 @@ public class Controller {
             String mdf = virtualRobot.mdfString();
             if(isRealBot){
                 //Send command to rpi
-                pcClient.sendPacket("1," + mdf);
+                pcClient.sendPacket(steps+"," + mdf);
             }
             virtualRobot.SenseAll();
         }else{
