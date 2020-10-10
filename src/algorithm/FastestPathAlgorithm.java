@@ -244,6 +244,39 @@ public class FastestPathAlgorithm {
         Collections.reverse(pathToTake);
 
         pathString = turnPathToDirection(pathToTake);
+        pathString = compressDirectionString(pathString);
+    }
+
+    private String compressDirectionString(String uncompressed){
+        StringBuilder s = new StringBuilder();
+        int fCnt=0;
+        for(int i=0; i<uncompressed.length();i++){
+            switch (uncompressed.charAt(i)){
+                case 'R':
+                    if(fCnt>0){
+                        s.append(fCnt);
+                        fCnt=0;
+                    }
+                    s.append('R');
+                    break;
+                case 'L':
+                    if(fCnt>0){
+                        s.append(fCnt);
+                        fCnt=0;
+                    }
+                    s.append('L');
+                    break;
+                default:
+                    fCnt++;
+                    break;
+            }
+        }
+        if(fCnt>0){
+            s.append(fCnt);
+        }
+        System.out.println(s.toString());
+
+        return s.toString();
     }
 
     private String turnPathToDirection(ArrayList<gridNode> path){
@@ -396,8 +429,7 @@ public class FastestPathAlgorithm {
                         mainController.robotTurnLeft();
                         break;
                     default:
-                        mainController.robotTurnRight();
-                        mainController.robotTurnRight();
+                        mainController.robotMoveForward(Integer.parseInt(String.valueOf(pathString.charAt((i)))));
                         break;
                 }
                 publish();

@@ -25,7 +25,7 @@ public class Controller {
     private Map arena;
     private True_Map trueArena;
     private Camera camera;
-    public static final boolean isRealBot=true;
+    public static final boolean isRealBot=false;
     private boolean isArenaExplored=false;
 
     private PCClient pcClient;
@@ -120,7 +120,7 @@ public class Controller {
             String mdf = virtualRobot.mdfString();
             if(isRealBot){
                 //Send command to rpi
-                pcClient.sendPacket("1," + mdf);
+                pcClient.sendPacket(steps+"," + mdf);
             }
             virtualRobot.SenseAll();
         }else{
