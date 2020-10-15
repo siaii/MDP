@@ -122,7 +122,9 @@ public class Controller {
                 //Send command to rpi
                 pcClient.sendPacket(steps+"," + mdf);
             }
-            virtualRobot.SenseAll();
+            if(!isArenaExplored){
+                virtualRobot.SenseAll();
+            }
         }else{
             System.out.println("robot bumped to wall");
         }
@@ -132,6 +134,9 @@ public class Controller {
         exploreAlgo.setMode(ui.getExploreMode());
 //        virtualRobot.SenseAll();
         exploreAlgo.exploreArena();
+    }
+
+    public void setArenaExplored(){
         isArenaExplored=true;
     }
 
@@ -143,6 +148,9 @@ public class Controller {
         }
         fastestPathAlgo.setFinishedWaypoint(true);
         fastestPathAlgo.setExplorationMode(false);
+        if(waypointX==1 && waypointY==MAP_CONST.MAP_GRID_HEIGHT-2){
+            fastestPathAlgo.runFastestPath(MAP_CONST.FINISH_ZONE_CENTER_X, MAP_CONST.FINISH_ZONE_CENTER_Y);
+        }
         fastestPathAlgo.runFastestPath(waypointX, waypointY);
     }
 
@@ -183,7 +191,9 @@ public class Controller {
         if(isRealBot){
             //Send command to rpi
             pcClient.sendPacket("D," + mdf);
-            virtualRobot.SenseAll();
+            if(!isArenaExplored){
+                virtualRobot.SenseAll();
+            }
         }
     }
 
@@ -193,7 +203,9 @@ public class Controller {
         if(isRealBot){
             //Send command to rpi
             pcClient.sendPacket("A," + mdf);
-            virtualRobot.SenseAll();
+            if(!isArenaExplored){
+                virtualRobot.SenseAll();
+            }
         }
     }
 

@@ -271,6 +271,10 @@ public class FastestPathAlgorithm {
                     s.append('L');
                     break;
                 default:
+                    if(fCnt==9){
+                        s.append(fCnt);
+                        fCnt=0;
+                    }
                     fCnt++;
                     break;
             }
