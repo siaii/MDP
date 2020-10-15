@@ -143,6 +143,9 @@ public class Controller {
         }
         fastestPathAlgo.setFinishedWaypoint(true);
         fastestPathAlgo.setExplorationMode(false);
+        if(waypointX == 1 && waypointY == MAP_CONST.MAP_GRID_HEIGHT-2){
+            fastestPathAlgo.runFastestPath(MAP_CONST.FINISH_ZONE_CENTER_X, MAP_CONST.FINISH_ZONE_CENTER_Y);
+        }
         fastestPathAlgo.runFastestPath(waypointX, waypointY);
     }
 

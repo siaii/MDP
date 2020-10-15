@@ -434,6 +434,7 @@ public class FastestPathAlgorithm {
                         break;
                     default:
                         mainController.robotMoveForward(Integer.parseInt(String.valueOf(pathString.charAt((i)))));
+                        if(Controller.isRealBot)    Thread.sleep(500);
                         break;
                 }
                 publish();

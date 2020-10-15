@@ -106,11 +106,11 @@ public class PCClient {
 
 	public String receivePacket(){
 		String instruction = null;
+		System.out.println("~~~~~Listen to Rpi~~~~~");
 		try {
-
 			//need to rethink this.
 			do {
-				System.out.println("~~~~~Listen to Rpi~~~~~");
+
 				// long timestart = System.currentTimeMillis();
 //				while(!input.ready());
 				// System.out.println(input.readLine());
