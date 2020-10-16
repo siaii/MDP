@@ -210,14 +210,15 @@ public class Controller {
     }
 
 
-    public void updateVirtualArena(int coordX, int coordY, boolean isWall){
+    public void updateVirtualArena(int coordX, int coordY, boolean isWall, boolean isFromRightSensor){
         arena.SetExplored(coordX, coordY);
 
         if(isWall){
-            arena.SetTrueWallAt(coordX, coordY);
+            arena.SetTrueWallAt(coordX, coordY, isFromRightSensor);
         }else{
-            if(arena.GetTrueWallAt(coordX, coordY)){
+            if(arena.GetTrueWallAt(coordX, coordY) && arena.GetIsFromRightSensor(coordX, coordY)){
                 arena.RemoveTrueWallAt(coordX, coordY);
+                arena.SetIsFromRightSensor(coordX, coordY,isFromRightSensor);
             }
         }
     }

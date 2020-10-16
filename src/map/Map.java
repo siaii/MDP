@@ -7,6 +7,7 @@ public class Map {
         boolean isTrueWall=false;
         boolean isVirtualWall = false;
         boolean isExplored = false;
+        boolean isRightSensor = false;
         int xPos, yPos;
 
         public Map_Cells(int x, int y){
@@ -29,6 +30,10 @@ public class Map {
         public boolean GetTrueWall(){
             return isTrueWall;
         }
+
+        public void SetRightSensor(boolean val){
+            isRightSensor=val;
+        }
     }
 
     public Map_Cells[][] fullMap = new Map_Cells[MAP_CONST.MAP_GRID_HEIGHT][MAP_CONST.MAP_GRID_WIDTH];
@@ -47,10 +52,11 @@ public class Map {
         InitStartZone();
     }
 
-    public void SetTrueWallAt(int xPos, int yPos){
+    public void SetTrueWallAt(int xPos, int yPos, boolean isRightSensor){
         //The actual wall
         fullMap[yPos][xPos].SetTrueWall(true);
         fullMap[yPos][xPos].SetVirtualWall(true);
+        fullMap[yPos][xPos].SetRightSensor(isRightSensor);
 
         //The virtual wall on the surrounding 8 cells
         if(yPos>0){
@@ -78,6 +84,14 @@ public class Map {
         if(xPos<MAP_CONST.MAP_GRID_WIDTH-1){
             fullMap[yPos][xPos+1].SetVirtualWall(true);
         }
+    }
+
+    public boolean GetIsFromRightSensor(int xPos, int yPos){
+        return fullMap[yPos][xPos].isRightSensor;
+    }
+
+    public void SetIsFromRightSensor(int xPos, int yPos, boolean val){
+        fullMap[yPos][xPos].SetRightSensor(val);
     }
 
     public void RemoveTrueWallAt(int xPos, int yPos){
@@ -117,7 +131,7 @@ public class Map {
 
         //Set back all the virtual wall of the remaining correct wall
         for (Map_Cells cell:neighbouringWalls) {
-            SetTrueWallAt(cell.xPos, cell.yPos);
+            SetTrueWallAt(cell.xPos, cell.yPos, cell.isRightSensor);
         }
         //Set back the border of the map just in case
         SetBorderVirtualWall();

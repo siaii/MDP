@@ -147,13 +147,13 @@ public class Sensor {
         for(int i=minDistance; i<res; ++i){
             checkCoords[axis]+=dir;
             if(checkValidCoords(checkCoords[0], checkCoords[1])){
-                mController.updateVirtualArena(checkCoords[0], checkCoords[1], false);
+                mController.updateVirtualArena(checkCoords[0], checkCoords[1], false, maxDistance==7);
             }
         }
         if(res<maxDistance){
             checkCoords[axis]+=dir;
             if(checkValidCoords(checkCoords[0],checkCoords[1])){
-                mController.updateVirtualArena(checkCoords[0], checkCoords[1], true);
+                mController.updateVirtualArena(checkCoords[0], checkCoords[1], true, maxDistance==7);
             }
         }
     }
