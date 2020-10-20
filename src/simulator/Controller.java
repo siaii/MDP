@@ -210,15 +210,17 @@ public class Controller {
     }
 
 
-    public void updateVirtualArena(int coordX, int coordY, boolean isWall, boolean isFromRightSensor){
+    public void updateVirtualArena(int coordX, int coordY, boolean isWall, boolean isOverriding){
+        if(arena.GetExplored(coordX, coordY) && !isOverriding) return;
+
         arena.SetExplored(coordX, coordY);
 
         if(isWall){
-            arena.SetTrueWallAt(coordX, coordY, isFromRightSensor);
+            arena.SetTrueWallAt(coordX, coordY);
         }else{
-            if(arena.GetTrueWallAt(coordX, coordY) && arena.GetIsFromRightSensor(coordX, coordY)){
+            if(arena.GetTrueWallAt(coordX, coordY) && isOverriding){
                 arena.RemoveTrueWallAt(coordX, coordY);
-                arena.SetIsFromRightSensor(coordX, coordY,isFromRightSensor);
+//                arena.SetIsFromRightSensor(coordX, coordY,isOverriding);
             }
         }
     }

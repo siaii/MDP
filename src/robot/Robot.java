@@ -37,12 +37,12 @@ public class Robot {
         robotPosition[1] = startY;
         robotOrientation = startOrientation;
 
-        Front_Front_Left_Sensor=new Sensor(NORTH, ROBOT_CONST.SHORT_RANGE_MAX_DISTANCE, ROBOT_CONST.SHORT_RANGE_MIN_DISTANCE, -1, -1, this);
-        Front_Front_Mid_Sensor=new Sensor(NORTH, ROBOT_CONST.SHORT_RANGE_MAX_DISTANCE, ROBOT_CONST.SHORT_RANGE_MIN_DISTANCE, 0, -1, this);
-        Front_Front_Right_Sensor=new Sensor(NORTH, ROBOT_CONST.SHORT_RANGE_MAX_DISTANCE, ROBOT_CONST.SHORT_RANGE_MIN_DISTANCE, 1, -1, this);
-        Left_Front_Left_Sensor=new Sensor(WEST, ROBOT_CONST.SHORT_RANGE_MAX_DISTANCE, ROBOT_CONST.SHORT_RANGE_MIN_DISTANCE, -1, -1, this);
-        Left_Bottom_Left_Sensor=new Sensor(WEST, ROBOT_CONST.SHORT_RANGE_MAX_DISTANCE, ROBOT_CONST.SHORT_RANGE_MIN_DISTANCE, -1, 1, this);
-        Right_Front_Right_Sensor=new Sensor(EAST, ROBOT_CONST.LONG_RANGE_MAX_DISTANCE, ROBOT_CONST.LONG_RANGE_MIN_DISTANCE, 1, -1, this);
+        Front_Front_Left_Sensor=new Sensor(NORTH, ROBOT_CONST.SHORT_RANGE_MAX_DISTANCE, ROBOT_CONST.SHORT_RANGE_MIN_DISTANCE, -1, -1, this, true);
+        Front_Front_Mid_Sensor=new Sensor(NORTH, ROBOT_CONST.SHORT_RANGE_MAX_DISTANCE, ROBOT_CONST.SHORT_RANGE_MIN_DISTANCE, 0, -1, this, true);
+        Front_Front_Right_Sensor=new Sensor(NORTH, ROBOT_CONST.SHORT_RANGE_MAX_DISTANCE, ROBOT_CONST.SHORT_RANGE_MIN_DISTANCE, 1, -1, this, true);
+        Left_Front_Left_Sensor=new Sensor(WEST, ROBOT_CONST.SHORT_RANGE_MAX_DISTANCE, ROBOT_CONST.SHORT_RANGE_MIN_DISTANCE, -1, -1, this, false);
+        Left_Bottom_Left_Sensor=new Sensor(WEST, ROBOT_CONST.SHORT_RANGE_MAX_DISTANCE, ROBOT_CONST.SHORT_RANGE_MIN_DISTANCE, -1, 1, this, false);
+        Right_Front_Right_Sensor=new Sensor(EAST, ROBOT_CONST.LONG_RANGE_MAX_DISTANCE, ROBOT_CONST.LONG_RANGE_MIN_DISTANCE, 1, -1, this, false);
     }
 
 

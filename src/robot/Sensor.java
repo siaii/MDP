@@ -16,13 +16,15 @@ public class Sensor {
     private final int sensorOffsetX;
     private final int sensorOffsetY;
     private ORIENTATION sensorDirection;
+    private final boolean isFrontSensor;
     /* direction : 1 for right sensor, -1 for left sensor, 0 for front sensor
     * offsetX, +1 for right, -1 for left
     * offsetY, +1 for up, -1 for bottom (maybe)
     */
-    public Sensor(ORIENTATION direction, int maxDist, int minDist, int offsetX, int offsetY, Robot robot){
+    public Sensor(ORIENTATION direction, int maxDist, int minDist, int offsetX, int offsetY, Robot robot, boolean isFrontFacing){
         mController=Controller.getInstance();
         realMap=mController.getTrueArena();
+        isFrontSensor=isFrontFacing;
         robotInstance=robot;
         maxDistance=maxDist;
         minDistance=minDist;
@@ -147,13 +149,13 @@ public class Sensor {
         for(int i=minDistance; i<res; ++i){
             checkCoords[axis]+=dir;
             if(checkValidCoords(checkCoords[0], checkCoords[1])){
-                mController.updateVirtualArena(checkCoords[0], checkCoords[1], false, maxDistance==7);
+                mController.updateVirtualArena(checkCoords[0], checkCoords[1], false, isFrontSensor);
             }
         }
         if(res<maxDistance){
             checkCoords[axis]+=dir;
             if(checkValidCoords(checkCoords[0],checkCoords[1])){
-                mController.updateVirtualArena(checkCoords[0], checkCoords[1], true, maxDistance==7);
+                mController.updateVirtualArena(checkCoords[0], checkCoords[1], true, isFrontSensor);
             }
         }
     }

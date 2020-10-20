@@ -7,7 +7,7 @@ public class Map {
         boolean isTrueWall=false;
         boolean isVirtualWall = false;
         boolean isExplored = false;
-        boolean isRightSensor = false;
+//        boolean isRightSensor = false;
         int xPos, yPos;
 
         public Map_Cells(int x, int y){
@@ -31,9 +31,9 @@ public class Map {
             return isTrueWall;
         }
 
-        public void SetRightSensor(boolean val){
-            isRightSensor=val;
-        }
+//        public void SetRightSensor(boolean val){
+//            isRightSensor=val;
+//        }
     }
 
     public Map_Cells[][] fullMap = new Map_Cells[MAP_CONST.MAP_GRID_HEIGHT][MAP_CONST.MAP_GRID_WIDTH];
@@ -52,11 +52,11 @@ public class Map {
         InitStartZone();
     }
 
-    public void SetTrueWallAt(int xPos, int yPos, boolean isRightSensor){
+    public void SetTrueWallAt(int xPos, int yPos){
         //The actual wall
         fullMap[yPos][xPos].SetTrueWall(true);
         fullMap[yPos][xPos].SetVirtualWall(true);
-        fullMap[yPos][xPos].SetRightSensor(isRightSensor);
+//        fullMap[yPos][xPos].SetRightSensor(isRightSensor);
 
         //The virtual wall on the surrounding 8 cells
         if(yPos>0){
@@ -86,13 +86,13 @@ public class Map {
         }
     }
 
-    public boolean GetIsFromRightSensor(int xPos, int yPos){
-        return fullMap[yPos][xPos].isRightSensor;
-    }
-
-    public void SetIsFromRightSensor(int xPos, int yPos, boolean val){
-        fullMap[yPos][xPos].SetRightSensor(val);
-    }
+//    public boolean GetIsFromRightSensor(int xPos, int yPos){
+//        return fullMap[yPos][xPos].isRightSensor;
+//    }
+//
+//    public void SetIsFromRightSensor(int xPos, int yPos, boolean val){
+//        fullMap[yPos][xPos].SetRightSensor(val);
+//    }
 
     public void RemoveTrueWallAt(int xPos, int yPos){
         ArrayList<Map_Cells> neighbouringWalls = FindNeighbouringWalls(xPos, yPos);
@@ -131,7 +131,7 @@ public class Map {
 
         //Set back all the virtual wall of the remaining correct wall
         for (Map_Cells cell:neighbouringWalls) {
-            SetTrueWallAt(cell.xPos, cell.yPos, cell.isRightSensor);
+            SetTrueWallAt(cell.xPos, cell.yPos);
         }
         //Set back the border of the map just in case
         SetBorderVirtualWall();
