@@ -25,7 +25,7 @@ public class Controller {
     private Map arena;
     private True_Map trueArena;
     private Camera camera;
-    public static final boolean isRealBot=true;
+    public static final boolean isRealBot=false;
     private boolean isArenaExplored=false;
 
     private PCClient pcClient;
@@ -122,9 +122,7 @@ public class Controller {
                 //Send command to rpi
                 pcClient.sendPacket(steps+"," + mdf);
             }
-            if(!isArenaExplored){
-                virtualRobot.SenseAll();
-            }
+            virtualRobot.SenseAll();
         }else{
             System.out.println("robot bumped to wall");
         }
@@ -191,9 +189,9 @@ public class Controller {
         if(isRealBot){
             //Send command to rpi
             pcClient.sendPacket("D," + mdf);
-            if(!isArenaExplored){
-                virtualRobot.SenseAll();
-            }
+
+            virtualRobot.SenseAll();
+
         }
     }
 
@@ -203,15 +201,15 @@ public class Controller {
         if(isRealBot){
             //Send command to rpi
             pcClient.sendPacket("A," + mdf);
-            if(!isArenaExplored){
-                virtualRobot.SenseAll();
-            }
+            virtualRobot.SenseAll();
+
         }
     }
 
 
     public void updateVirtualArena(int coordX, int coordY, boolean isWall, boolean isOverriding){
         if(arena.GetExplored(coordX, coordY) && !isOverriding) return;
+        if(isArenaExplored) return;
 
         arena.SetExplored(coordX, coordY);
 

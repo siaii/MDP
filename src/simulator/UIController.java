@@ -92,7 +92,7 @@ public class UIController extends JFrame {
             public void actionPerformed(ActionEvent e) {
                 try {
                     //TODO  change the parameter to waypoint
-                    mainController.runFastestPath(7, 2);
+                    mainController.runFastestPath(5, 5);
                 } catch (InterruptedException ex) {
                     ex.printStackTrace();
                 }
